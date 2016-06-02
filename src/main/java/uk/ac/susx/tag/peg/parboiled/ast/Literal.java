@@ -20,4 +20,19 @@ public class Literal extends SuperNode {
         }
 
     }
+    public static class NOTHINGNode extends Literal {
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visit(this);
+        }
+
+    }
+    public static class EMPTYNode extends Literal {
+        @Override
+        public void accept(Visitor visitor) {
+            visitor.visit(this);
+        }
+
+    }
+
 }

@@ -5,7 +5,6 @@ import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
-import org.parboiled.common.ImmutableList;
 import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
@@ -41,7 +40,7 @@ public class PegParser extends BaseParser<Object> {
 
     public Rule Grammar () {
         List<DefinitionNode> defs = new ArrayList<>();
-        return Sequence(Spacing(), ZeroOrMore(Definition(), defs.add((DefinitionNode)pop())), push(new GrammarNode(defs)), EOI);
+        return Sequence(Spacing(), ZeroOrMore(Definition(), defs.add((DefinitionNode)pop())), push(new GrammarNode(defs)), EndOfFile());
     }
 
     public Rule Definition() {
@@ -99,7 +98,9 @@ public class PegParser extends BaseParser<Object> {
                 Sequence(OPEN(), Expression(), CLOSE()),
                 Literal(),
                 Class(),
-                DOT()
+                DOT(),
+                EMPTY(),
+                NOTHING()
         ), push(new PrimaryNode((SuperNode)pop())));
     }
 
@@ -191,7 +192,17 @@ public class PegParser extends BaseParser<Object> {
 
     @SuppressSubnodes
     public Rule DOT() {
-		return Sequence('.',  push(new Literal.DOTNode()), Spacing());
+        return Sequence('.',  push(new Literal.DOTNode()), Spacing());
+    }
+
+    @SuppressSubnodes
+    public Rule EMPTY() {
+        return Sequence('_',  push(new Literal.EMPTYNode()), Spacing());
+    }
+
+    @SuppressSubnodes
+    public Rule NOTHING() {
+        return Sequence('~',  push(new Literal.NOTHINGNode()), Spacing());
     }
 
     @SuppressSubnodes
@@ -201,22 +212,22 @@ public class PegParser extends BaseParser<Object> {
 
     @SuppressSubnodes
     public Rule Space() {
-        return FirstOf(' ', '\t', EOL());
+        return FirstOf(' ', '\t', EndOfLine());
     }
 
     @SuppressSubnodes
     public Rule Comment() {
-		return Sequence("#", ZeroOrMore(TestNot(EOL()), ANY), EOL());
+		return Sequence("#", ZeroOrMore(TestNot(EndOfLine()), ANY), EndOfLine());
     }
 
     @SuppressSubnodes
-    public Rule EOL() {
+    public Rule EndOfLine() {
         return FirstOf(Sequence('\r', '\n'), Ch('\r'), Ch('\n'));
     }
 
     @SuppressSubnodes
-    public Rule EOF() {
-        return TestNot(ANY);
+    public Rule EndOfFile() {
+        return EOI;
     }
 
 
@@ -228,7 +239,7 @@ public class PegParser extends BaseParser<Object> {
         String input = "";
 
         try (
-                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/peg.peg"))
+                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/test.peg"))
         ) {
             String line = "";
             while ((line = reader.readLine())!=null) {

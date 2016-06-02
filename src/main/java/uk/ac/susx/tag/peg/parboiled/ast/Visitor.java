@@ -18,5 +18,9 @@ public interface Visitor {
     void visit(ClassNode node);
     void visit(CharNode node);
     void visit(Literal.DOTNode node);
+    void visit(EndOfFileNode node);
+    void visit(Literal.EMPTYNode node);
+    void visit(Literal.NOTHINGNode node);
+
 
 }

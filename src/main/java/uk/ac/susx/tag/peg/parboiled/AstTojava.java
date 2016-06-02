@@ -161,7 +161,9 @@ public class AstTojava implements Visitor {
 
     @Override
     public void visit(LiteralNode node) {
+        printer.print("String(");
         printer.print(node.getLiteral());
+        printer.print(")");
     }
 
     @Override
@@ -241,6 +243,21 @@ public class AstTojava implements Visitor {
         printer.print("ANY");
     }
 
+    @Override
+    public void visit(Literal.EMPTYNode node) {
+        printer.print("EMPTY");
+    }
+
+    @Override
+    public void visit(Literal.NOTHINGNode node) {
+        printer.print("NOTHING");
+    }
+
+    @Override
+    public void visit(EndOfFileNode node) {
+        printer.print("EOI");
+    }
+
     public String toJava(GrammarNode grammar) {
         grammar.accept(this);
         return printer.getString();
@@ -267,7 +284,7 @@ public class AstTojava implements Visitor {
         String input = "";
 
         try (
-                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/peg.peg"))
+                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/test.peg"))
         ) {
             String line = "";
             while ((line = reader.readLine())!=null) {

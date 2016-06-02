@@ -7,7 +7,7 @@ Prefix <- (AND / NOT)? Suffix
 Suffix <- Primary (QUESTION / STAR / PLUS)?
 Primary <- Identifier !LEFTARROW
 / OPEN Expression CLOSE
-/ Literal / Class / DOT
+/ Literal / Class / DOT / EMPTY / NOTHING
 # Lexical syntax
 Identifier <- IdentStart IdentCont* Spacing
 IdentStart <- [a-zA-Z_]
@@ -30,6 +30,8 @@ PLUS <- '+' Spacing
 OPEN <- '(' Spacing
 CLOSE <- ')' Spacing
 DOT <- '.' Spacing
+EMPTY <- '_' Spacing
+NOTHING <- '~' Spacing
 Spacing <- (Space / Comment)*
 Comment <- '#' (!EndOfLine .)* EndOfLine
 Space <- ' ' / '\t' / EndOfLine
