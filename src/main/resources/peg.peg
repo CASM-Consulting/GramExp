@@ -9,9 +9,10 @@ Primary <- Identifier !LEFTARROW
 / OPEN Expression CLOSE
 / Literal / Class / DOT / EMPTY / NOTHING
 # Lexical syntax
-Identifier <- IdentStart IdentCont* Spacing
+Identifier <- IdentStart IdentCont* Arguments? Spacing
 IdentStart <- [a-zA-Z_]
 IdentCont <- IdentStart / [0-9]
+Arguments <- AOPEN Identifier+ ACLOSE
 Literal <- ['] (!['] Char)* ['] Spacing
 / ["] (!["] Char)* ["] Spacing
 Class <- '[' (!']' Range)* ']' Spacing
@@ -32,6 +33,10 @@ CLOSE <- ')' Spacing
 DOT <- '.' Spacing
 EMPTY <- '_' Spacing
 NOTHING <- '~' Spacing
+COPEN <- '{' Spacing
+CCLOSE <- '}' Spacing
+AOPEN <- '<' Spacing
+ACLOSE <- '>' Spacing
 Spacing <- (Space / Comment)*
 Comment <- '#' (!EndOfLine .)* EndOfLine
 Space <- ' ' / '\t' / EndOfLine

@@ -9,6 +9,7 @@ import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.Var;
+import sun.tools.java.Identifier;
 import uk.ac.susx.tag.peg.parboiled.ast.*;
 
 import java.io.BufferedReader;
@@ -49,11 +50,6 @@ public class PegParser extends BaseParser<Object> {
                 LEFTARROW(),
                 Expression(), push(new DefinitionNode((ExpressionNode) pop(), (IdentifierNode) pop()))
         );
-    }
-
-    Object _pop() {
-        Object pop = pop();
-        return pop;
     }
 
     public Rule Expression() {
@@ -106,7 +102,15 @@ public class PegParser extends BaseParser<Object> {
 
     @SuppressSubnodes
     public Rule Identifier() {
-        return Sequence(IdentStart(), push(match()), ZeroOrMore(IdentCont()), push(new IdentifierNode((String)pop(), match())), Spacing());
+        Var<StringBuilder> id = new Var<>(new StringBuilder());
+        Var<ArgumentsNode> optional = new Var<>();
+        return Sequence(
+                IdentStart(), (id.get().append(match())!=null),
+                ZeroOrMore(IdentCont(), (id.get().append(match())!=null)),
+                Optional(Arguments(), optional.set((ArgumentsNode)pop())),
+                push(new IdentifierNode(id.get().toString(), optional.get())),
+                Spacing()
+        );
     }
 
     public Rule IdentStart() {
@@ -115,6 +119,16 @@ public class PegParser extends BaseParser<Object> {
 
     public Rule IdentCont() {
         return FirstOf(IdentStart(), CharRange('0', '9'));
+    }
+
+    public Rule Arguments() {
+        Var<List<IdentifierNode>> args = new Var<>(new ArrayList<>());
+        return Sequence(
+                AOPEN(),
+                OneOrMore(Identifier(), args.get().add((IdentifierNode)pop())),
+                ACLOSE(),
+                push(new ArgumentsNode<>(args.get()))
+        );
     }
 
     public Rule Literal() {
@@ -181,13 +195,22 @@ public class PegParser extends BaseParser<Object> {
 
     @SuppressSubnodes
     public Rule OPEN() {
-
 		return Sequence('('/*,push(new Literal.OPENNode())*/,Spacing());
     }
 
     @SuppressSubnodes
     public Rule CLOSE() {
 		return Sequence(')'/*,push(new Literal.CLOSENode())*/, Spacing());
+    }
+
+    @SuppressSubnodes
+    public Rule AOPEN() {
+        return Sequence('<'/*,push(new Literal.OPENNode())*/,Spacing());
+    }
+
+    @SuppressSubnodes
+    public Rule ACLOSE() {
+        return Sequence('>'/*,push(new Literal.CLOSENode())*/, Spacing());
     }
 
     @SuppressSubnodes

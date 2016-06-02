@@ -156,14 +156,34 @@ public class AstTojava implements Visitor {
     @Override
     public void visit(IdentifierNode node) {
         printer.print(node.getId());
-        printer.print("()");
+        printer.print("(");
+        List<Node> children = node.getChildren();
+        if(children.size() == 1 && children.get(0) != null) {
+            visitChildren(node);
+        }
+        printer.print(")");
+    }
+
+    @Override
+    public void visit(ArgumentsNode node) {
+        List<Node> children = node.getChildren();
+        for( int i = 0; i < children.size() ; ++i) {
+            children.get(i).accept(this);
+            if(notLast(children, i)) {
+                printer.print(",");
+            }
+        }
     }
 
     @Override
     public void visit(LiteralNode node) {
-        printer.print("String(");
+        if(node.isStringify()) {
+            printer.print("String(");
+        }
         printer.print(node.getLiteral());
-        printer.print(")");
+        if(node.isStringify()) {
+            printer.print(")");
+        }
     }
 
     @Override

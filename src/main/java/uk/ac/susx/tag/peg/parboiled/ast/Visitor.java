@@ -14,6 +14,7 @@ public interface Visitor {
     void visit(SuffixNode node);
     void visit(PrimaryNode node);
     void visit(IdentifierNode node);
+    void visit(ArgumentsNode node);
     void visit(LiteralNode node);
     void visit(ClassNode node);
     void visit(CharNode node);
