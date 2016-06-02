@@ -8,7 +8,9 @@ public class LiteralNode extends SuperNode {
     private final String lit;
 
     public LiteralNode(String lit) {
-        this.lit = lit;
+        char q = lit.length()>1 ? '"' : '\'';
+
+        this.lit = q + lit + q;
     }
 
     public String getLiteral() {

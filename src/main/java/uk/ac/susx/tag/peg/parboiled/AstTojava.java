@@ -1,11 +1,13 @@
 package uk.ac.susx.tag.peg.parboiled;
 
 import org.parboiled.Parboiled;
+import org.parboiled.common.StringUtils;
 import uk.ac.susx.tag.peg.parboiled.ast.*;
 
 import java.io.BufferedReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
@@ -26,6 +28,8 @@ public class AstTojava implements Visitor {
         printer.print("import org.parboiled.BaseParser;");
         printer.println();
         printer.print("import org.parboiled.Rule;");
+        printer.println();
+        printer.print("import org.parboiled.annotations.BuildParseTree;");
         printer.println();
         printer.print("@BuildParseTree");
         printer.println();
@@ -163,37 +167,66 @@ public class AstTojava implements Visitor {
     @Override
     public void visit(ClassNode node) {
         List<String> clss = node.getCls();
-        if(onePlus(clss)) {
+        List<String> chrs = new ArrayList<>();
+        List<String> ranges = new ArrayList<>();
+
+        for(String str : clss) {
+            if(str.length() < 3) {
+                chrs.add(str);
+            } else {
+                ranges.add(str);
+            }
+        }
+        int n = 0;
+        n += chrs.isEmpty() ? 0 : 1;
+        n += ranges.size();
+
+        if(n > 1) {
             printer.print("FirstOf(");
         }
 
-        for(int i = 0; i < clss.size(); ++i) {
-            String[] c = clss.get(i).split("-");
-            if(c.length == 1) {
-                char q;
-                if(c[0].equals("\'") || c[0].length() > 1) {
-                    q = '"';
-                } else {
-                    q = '\'';
-                }
-                printer.print(q);
-                printer.print(c[0]);
-                printer.print(q);
-            } else if(c.length > 1) {
-                printer.print("CharRange('");
-                printer.print(c[0]);
-                printer.print("','");
-                printer.print(c[1]);
-                printer.print("')");
+        if(chrs.size() == 1) {
+            char q;
+            String chr = chrs.get(0);
+            if (chr.equals("\'") || chr.length() > 1) {
+                q = '"';
+            } else {
+                q = '\'';
             }
+            printer.print(q);
+            printer.print(chr);
+            printer.print(q);
+        } else if(chrs.size()>1) {
+            printer.print("AnyOf(\"");
+            printer.print(StringUtils.join(chrs, "")
+                    .replaceAll("\"","\\\\\"")
+                    .replaceAll("\\\\\\[","[")
+                    .replaceAll("\\\\\\]","]")
+            );
+            printer.print("\")");
 
-            if(notLast(clss, i)) {
+        }
+
+        if(n > 1) {
+            printer.print(",");
+        }
+
+        for(int i = 0; i < ranges.size(); ++i) {
+            String[] c = ranges.get(i).split("-");
+
+            printer.print("CharRange('");
+            printer.print(c[0]);
+            printer.print("','");
+            printer.print(c[1]);
+            printer.print("')");
+
+            if(notLast(ranges, i)) {
                 printer.print(",");
             }
 
         }
 
-        if(onePlus(clss)) {
+        if(n > 1) {
             printer.print(")");
         }
     }

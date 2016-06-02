@@ -117,10 +117,11 @@ public class PegParser extends BaseParser<Object> {
     }
 
     public Rule Literal() {
+        Var<StringBuilder> lit = new Var<>(new StringBuilder());
 		return Sequence(FirstOf(
-                Sequence('\'', ZeroOrMore(Sequence(TestNot(AnyOf("'")), ANY)), '\'', Spacing()),
-                Sequence('"', ZeroOrMore(Sequence(TestNot(AnyOf("\"")), ANY)), '"', Spacing())
-        ),push(new LiteralNode(match())));
+                Sequence('\'', ZeroOrMore(Sequence(TestNot(AnyOf("'")), ANY, (lit.get().append(match())!=null)) ), '\'', Spacing()),
+                Sequence('"', ZeroOrMore(Sequence(TestNot(AnyOf("\"")), ANY, (lit.get().append(match())!=null)) ), '"', Spacing())
+        ),push(new LiteralNode(lit.get().toString())));
     }
 
     public Rule Class() {
