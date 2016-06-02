@@ -33,7 +33,20 @@ public class AstTojava implements Visitor {
         printer.println();
         printer.print("@BuildParseTree");
         printer.println();
-        printer.print("public class Grammar extends BaseParser<Object> {");
+
+        String cls;
+        switch (node.getMode()) {
+            case "/nlp/":
+                cls = AbstractNlpParser.class.getCanonicalName();
+                break;
+            default:
+                cls = "BaseParser<Object>";
+                break;
+        }
+
+        printer.print("public class Grammar extends ");
+        printer.print(cls);
+        printer.print(" {");
         printer.println();
         printer.indent(1);
         visitChildren(node);
@@ -49,7 +62,7 @@ public class AstTojava implements Visitor {
     @Override
     public void visit(DefinitionNode node) {
 
-        printer.print("Rule ");
+        printer.print("public Rule ");
         printer.print(node.name());
         printer.print("( ) {");
         printer.indent(1);

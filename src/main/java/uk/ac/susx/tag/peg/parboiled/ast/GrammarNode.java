@@ -10,12 +10,17 @@ import java.util.List;
  */
 public class GrammarNode extends SuperNode {
 
+    private ModeNode mode;
 
-    public GrammarNode(List<DefinitionNode> defs) {
+    public GrammarNode(List<DefinitionNode> defs, ModeNode modeNode) {
         super(defs);
+        mode = modeNode;
+
     }
 
-
+    public String getMode() {
+        return mode == null ? "" : mode.getMode();
+    }
 
     @Override
     public void accept(Visitor visitor) {

@@ -1,5 +1,6 @@
 # Hierarchical syntax
-Grammar <- Spacing Definition+ EndOfFile
+Grammar <- Spacing Mode? Definition+ EndOfFile
+Mode <- '/' (!'/' Char)+ '/' Spacing
 Definition <- Identifier LEFTARROW Expression
 Expression <- Sequence (SLASH Sequence)*
 Sequence <- Prefix*

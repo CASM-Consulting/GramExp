@@ -40,8 +40,13 @@ public class PegParser extends BaseParser<Object> {
     }
 
     public Rule Grammar () {
-        List<DefinitionNode> defs = new ArrayList<>();
-        return Sequence(Spacing(), ZeroOrMore(Definition(), defs.add((DefinitionNode)pop())), push(new GrammarNode(defs)), EndOfFile());
+        Var<List<DefinitionNode>> defs = new Var<>(new ArrayList<>());
+        Var<ModeNode> optional = new Var<>();
+        return Sequence(Spacing(), Optional(Mode(), optional.set((ModeNode)pop())), OneOrMore(Definition(), defs.get().add((DefinitionNode)pop())), push(new GrammarNode(defs.get(), optional.get())), EndOfFile());
+    }
+
+    public Rule Mode() {
+        return Sequence(Sequence('/',OneOrMore(Sequence(TestNot(String('/')),Char())),'/'),push(new ModeNode(match())), Spacing());
     }
 
     public Rule Definition() {
