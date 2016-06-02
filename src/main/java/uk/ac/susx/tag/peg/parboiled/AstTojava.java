@@ -23,6 +23,10 @@ public class AstTojava implements Visitor {
 
     @Override
     public void visit(GrammarNode node) {
+        printer.print("import org.parboiled.BaseParser;");
+        printer.println();
+        printer.print("import org.parboiled.Rule;");
+        printer.println();
         printer.print("@BuildParseTree");
         printer.println();
         printer.print("public class Grammar extends BaseParser<Object> {");
