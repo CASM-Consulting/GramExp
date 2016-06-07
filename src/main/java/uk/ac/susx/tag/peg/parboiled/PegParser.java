@@ -45,7 +45,7 @@ public class PegParser extends BaseParser<Object> {
     public Rule Grammar () {
         Var<List<DefinitionNode>> defs = new Var<>(new ArrayList<>());
         Var<ModeNode> optional = new Var<>();
-        return Sequence(Spacing(), Optional(Mode(), optional.set((ModeNode)pop())), OneOrMore(Definition(), defs.get().add((DefinitionNode)pop())), push(new GrammarNode(defs.get(), optional.get())), EndOfFile());
+        return Sequence(Spacing(), Optional(Mode(), optional.set((ModeNode)pop())), OneOrMore(Definition(), defs.get().add((DefinitionNode)pop())), push(new GrammarNode(defs.get(), optional.get())), EOI);
     }
 
     public Rule Mode() {
@@ -104,8 +104,9 @@ public class PegParser extends BaseParser<Object> {
                 Class(),
                 DOT(),
                 EMPTY(),
-                NOTHING()
-        ), push(new PrimaryNode((SuperNode)pop())));
+                NOTHING(),
+                EndOfFile()
+                ), push(new PrimaryNode((SuperNode)pop())));
     }
 
     @SuppressSubnodes
@@ -258,7 +259,7 @@ public class PegParser extends BaseParser<Object> {
 
     @SuppressSubnodes
     public Rule EndOfFile() {
-        return EOI;
+        return Sequence("$", push(new EndOfFileNode<>()), Spacing());
     }
 
 
@@ -270,7 +271,7 @@ public class PegParser extends BaseParser<Object> {
         String input = "";
 
         try (
-                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/peg.peg"))
+                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/test.peg"))
         ) {
             String line = "";
             while ((line = reader.readLine())!=null) {

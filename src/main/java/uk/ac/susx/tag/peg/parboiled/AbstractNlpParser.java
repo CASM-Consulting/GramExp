@@ -67,5 +67,5 @@ abstract public class AbstractNlpParser extends BaseParser<Object> {
         return Sequence(Optional('\r'), Ch('\n'));
     }
 
-    
+
 }

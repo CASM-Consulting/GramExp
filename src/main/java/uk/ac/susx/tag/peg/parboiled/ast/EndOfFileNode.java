@@ -5,10 +5,6 @@ package uk.ac.susx.tag.peg.parboiled.ast;
  */
 public class EndOfFileNode<T extends SuperNode> extends SuperNode {
 
-    public EndOfFileNode(T node) {
-        super(node);
-    }
-
     @Override
     public void accept(Visitor visitor) {
         visitor.visit(this);
