@@ -9,7 +9,6 @@ import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.Var;
-import sun.tools.java.Identifier;
 import uk.ac.susx.tag.peg.parboiled.ast.*;
 
 import java.io.BufferedReader;
@@ -267,7 +266,7 @@ public class PegParser extends BaseParser<Object> {
         String input = "";
 
         try (
-                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/test.peg"))
+                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/peg.peg"))
         ) {
             String line = "";
             while ((line = reader.readLine())!=null) {
