@@ -33,7 +33,7 @@ public class PegParser extends BaseParser<Object> {
 
         ParsingResult<Node> result = runner.run(input);
 
-        GrammarNode grammarNode = (GrammarNode) result.resultValue;;
+        GrammarNode grammarNode = (GrammarNode) result.resultValue;
 
         if(grammarNode == null){
             throw new ParseException(ErrorUtils.printParseError(result.parseErrors.get(0)));

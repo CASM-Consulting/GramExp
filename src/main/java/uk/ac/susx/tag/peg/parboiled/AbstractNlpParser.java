@@ -67,40 +67,5 @@ abstract public class AbstractNlpParser extends BaseParser<Object> {
         return Sequence(Optional('\r'), Ch('\n'));
     }
 
-
-    abstract public Rule Begin();
-
-
-    public static void test(Class<? extends AbstractNlpParser> cls, String input) {
-        AbstractNlpParser parser = Parboiled.createParser(cls);
-
-        ReportingParseRunner runner = new ReportingParseRunner(parser.Begin());
-
-        ParsingResult<?> result = runner.run(input);
-
-        if (!result.parseErrors.isEmpty())
-            System.out.println(ErrorUtils.printParseError(result.parseErrors.get(0)));
-        else {
-            System.out.println(printNodeTree(result) + '\n');
-
-//            long tic = new Date().getTime();
-//            for(int i = 0; i < 1000; ++i) {
-//                runner.run(input);
-//            }
-//            long toc = new Date().getTime();
-//            System.out.println(""+(toc-tic));
-        }
-
-    }
-
-    public static void main(String[] args) {
-        class Test extends AbstractNlpParser {
-            @Override
-            public Rule Begin() {
-                return Text(Ch('A'));
-            }
-        };
-
-        System.out.println(Character.UnicodeBlock.GENERAL_PUNCTUATION);
-    }
+    
 }
