@@ -13,7 +13,7 @@ Primary <- Identifier !LEFTARROW
 Identifier <- IdentStart IdentCont* Arguments? Spacing
 IdentStart <- [a-zA-Z_]
 IdentCont <- IdentStart / [0-9]
-Arguments <- AOPEN Identifier+ ACLOSE
+Arguments <- AOPEN (Identifier / Literal)+ ACLOSE
 Literal <- ['] (!['] Char)* ['] Spacing
 / ["] (!["] Char)* ["] Spacing
 Class <- '[' (!']' Range)* ']' Spacing
@@ -32,7 +32,7 @@ PLUS <- '+' Spacing
 OPEN <- '(' Spacing
 CLOSE <- ')' Spacing
 DOT <- '.' Spacing
-EMPTY <- '_' Spacing
+EMPTY <- ':' Spacing
 NOTHING <- '~' Spacing
 COPEN <- '{' Spacing
 CCLOSE <- '}' Spacing

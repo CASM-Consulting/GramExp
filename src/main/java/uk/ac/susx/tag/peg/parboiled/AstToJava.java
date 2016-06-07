@@ -176,9 +176,7 @@ public class AstToJava implements Visitor {
         printer.print(node.getId());
         printer.print("(");
         List<Node> children = node.getChildren();
-        if(children.size() == 1 && children.get(0) != null) {
-            visitChildren(node);
-        }
+        visitChildren(node);
         printer.print(")");
     }
 
@@ -304,7 +302,9 @@ public class AstToJava implements Visitor {
 
     protected void visitChildren(SuperNode node) {
         for (Object child : node.getChildren()) {
-            ((Node)child).accept(this);
+            if(child != null) {
+                ((Node)child).accept(this);
+            }
         }
     }
 

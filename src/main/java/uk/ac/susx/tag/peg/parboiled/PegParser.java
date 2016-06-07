@@ -131,10 +131,10 @@ public class PegParser extends BaseParser<Object> {
     }
 
     public Rule Arguments() {
-        Var<List<IdentifierNode>> args = new Var<>(new ArrayList<>());
+        Var<List<SuperNode>> args = new Var<>(new ArrayList<>());
         return Sequence(
                 AOPEN(),
-                OneOrMore(Identifier(), args.get().add((IdentifierNode)pop())),
+                OneOrMore(FirstOf(Identifier(), Literal()), args.get().add((SuperNode)pop())),
                 ACLOSE(),
                 push(new ArgumentsNode<>(args.get()))
         );
@@ -229,7 +229,7 @@ public class PegParser extends BaseParser<Object> {
 
     @SuppressSubnodes
     public Rule EMPTY() {
-        return Sequence('_',  push(new Literal.EMPTYNode()), Spacing());
+        return Sequence(':',  push(new Literal.EMPTYNode()), Spacing());
     }
 
     @SuppressSubnodes
