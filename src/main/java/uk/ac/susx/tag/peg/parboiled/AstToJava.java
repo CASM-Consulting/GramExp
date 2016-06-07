@@ -72,9 +72,9 @@ public class AstToJava implements Visitor {
         printer.print("( ) {");
         printer.indent(1);
         printer.println();
-        printer.print("return ");
+        printer.print("return toRule(");
         visitChildren(node);
-        printer.print(";");
+        printer.print(");");
         printer.indent(-1);
         printer.println();
         printer.print("}");
