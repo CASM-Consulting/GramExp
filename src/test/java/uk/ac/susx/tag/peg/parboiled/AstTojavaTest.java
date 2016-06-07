@@ -30,7 +30,7 @@ public class AstTojavaTest {
             }
         }
 
-        String clsName = "Test";
+        String clsName = "Peg";
 
 
         AstToJava astToJava = new AstToJava(clsName);
@@ -43,13 +43,13 @@ public class AstTojavaTest {
             "import org.parboiled.Rule;\n" +
             "import org.parboiled.annotations.BuildParseTree;\n" +
             "@BuildParseTree\n" +
-            "public class Test extends BaseParser<Object> {\n" +
+            "public class Peg extends BaseParser<Object> {\n" +
             "public Rule Grammar( ) {\n" +
             "  return Sequence(Spacing(),Optional(Mode()),OneOrMore(Definition()),EndOfFile());\n" +
             " }\n" +
             " \n" +
             " public Rule Mode( ) {\n" +
-            "  return Sequence(String('/'),OneOrMore(Sequence(TestNot(String('/')),Char())),String('/'),Spacing());\n" +
+            "  return Sequence('/',OneOrMore(Sequence(TestNot('/'),Char())),'/',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule Definition( ) {\n" +
@@ -89,7 +89,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Arguments( ) {\n" +
-            "  return Sequence(AOPEN(),OneOrMore(Identifier()),ACLOSE());\n" +
+            "  return Sequence(AOPEN(),OneOrMore(FirstOf(Identifier(),Literal())),ACLOSE());\n" +
             " }\n" +
             " \n" +
             " public Rule Literal( ) {\n" +
@@ -97,79 +97,79 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Class( ) {\n" +
-            "  return Sequence(String('['),ZeroOrMore(Sequence(TestNot(String(']')),Range())),String(']'),Spacing());\n" +
+            "  return Sequence('[',ZeroOrMore(Sequence(TestNot(']'),Range())),']',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule Range( ) {\n" +
-            "  return FirstOf(Sequence(Char(),String('-'),Char()),Char());\n" +
+            "  return FirstOf(Sequence(Char(),'-',Char()),Char());\n" +
             " }\n" +
             " \n" +
             " public Rule Char( ) {\n" +
-            "  return FirstOf(Sequence(String(\"\\\\\"),AnyOf(\"nrt'\\\"[]\\\\\")),Sequence(String(\"\\\\\"),CharRange('0','2'),CharRange('0','7'),CharRange('0','7')),Sequence(String(\"\\\\\"),CharRange('0','7'),Optional(CharRange('0','7'))),Sequence(TestNot(String(\"\\\\\")),ANY));\n" +
+            "  return FirstOf(Sequence(\"\\\\\",AnyOf(\"nrt'\\\"[]\\\\\")),Sequence(\"\\\\\",CharRange('0','2'),CharRange('0','7'),CharRange('0','7')),Sequence(\"\\\\\",CharRange('0','7'),Optional(CharRange('0','7'))),Sequence(TestNot(\"\\\\\"),ANY));\n" +
             " }\n" +
             " \n" +
             " public Rule LEFTARROW( ) {\n" +
-            "  return Sequence(String(\"<-\"),Spacing());\n" +
+            "  return Sequence(\"<-\",Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule SLASH( ) {\n" +
-            "  return Sequence(String('/'),Spacing());\n" +
+            "  return Sequence('/',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule AND( ) {\n" +
-            "  return Sequence(String('&'),Spacing());\n" +
+            "  return Sequence('&',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule NOT( ) {\n" +
-            "  return Sequence(String('!'),Spacing());\n" +
+            "  return Sequence('!',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule QUESTION( ) {\n" +
-            "  return Sequence(String('?'),Spacing());\n" +
+            "  return Sequence('?',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule STAR( ) {\n" +
-            "  return Sequence(String('*'),Spacing());\n" +
+            "  return Sequence('*',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule PLUS( ) {\n" +
-            "  return Sequence(String('+'),Spacing());\n" +
+            "  return Sequence('+',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule OPEN( ) {\n" +
-            "  return Sequence(String('('),Spacing());\n" +
+            "  return Sequence('(',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule CLOSE( ) {\n" +
-            "  return Sequence(String(')'),Spacing());\n" +
+            "  return Sequence(')',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule DOT( ) {\n" +
-            "  return Sequence(String('.'),Spacing());\n" +
+            "  return Sequence('.',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule EMPTY( ) {\n" +
-            "  return Sequence(String('_'),Spacing());\n" +
+            "  return Sequence(':',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule NOTHING( ) {\n" +
-            "  return Sequence(String('~'),Spacing());\n" +
+            "  return Sequence('~',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule COPEN( ) {\n" +
-            "  return Sequence(String('{'),Spacing());\n" +
+            "  return Sequence('{',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule CCLOSE( ) {\n" +
-            "  return Sequence(String('}'),Spacing());\n" +
+            "  return Sequence('}',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule AOPEN( ) {\n" +
-            "  return Sequence(String('<'),Spacing());\n" +
+            "  return Sequence('<',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule ACLOSE( ) {\n" +
-            "  return Sequence(String('>'),Spacing());\n" +
+            "  return Sequence('>',Spacing());\n" +
             " }\n" +
             " \n" +
             " public Rule Spacing( ) {\n" +
@@ -177,15 +177,15 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Comment( ) {\n" +
-            "  return Sequence(String('#'),ZeroOrMore(Sequence(TestNot(EndOfLine()),ANY)),EndOfLine());\n" +
+            "  return Sequence('#',ZeroOrMore(Sequence(TestNot(EndOfLine()),ANY)),EndOfLine());\n" +
             " }\n" +
             " \n" +
             " public Rule Space( ) {\n" +
-            "  return FirstOf(String(' '),String(\"\\t\"),EndOfLine());\n" +
+            "  return FirstOf(' ',\"\\t\",EndOfLine());\n" +
             " }\n" +
             " \n" +
             " public Rule EndOfLine( ) {\n" +
-            "  return FirstOf(String(\"\\r\\n\"),String(\"\\n\"),String(\"\\r\"));\n" +
+            "  return FirstOf(\"\\r\\n\",\"\\n\",\"\\r\");\n" +
             " }\n" +
             " \n" +
             " public Rule EndOfFile( ) {\n" +

@@ -58,7 +58,7 @@ abstract public class AbstractNlpParser extends BaseParser<Object> {
     }
 
     @SuppressSubnodes
-    public Rule Text(Rule exclude) {
+    public Rule Text(Object exclude) {
         return OneOrMore(FirstOf(TestNot(exclude), NOTHING), FirstOf(W(), PUNCT(), S()));
     }
 

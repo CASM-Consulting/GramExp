@@ -6,22 +6,17 @@ package uk.ac.susx.tag.peg.parboiled.ast;
 public class LiteralNode extends SuperNode {
 
     private final String lit;
-    private final boolean stringify;
 
     public LiteralNode(String lit) {
         char q = lit.length()>1 ? '"' : '\'';
 
         this.lit = q + lit + q;
-        this.stringify = true;
     }
 
     public String getLiteral() {
         return lit;
     }
 
-    public boolean isStringify() {
-        return stringify;
-    }
 
     @Override
     public void accept(Visitor visitor) {

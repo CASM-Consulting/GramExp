@@ -193,13 +193,13 @@ public class AstToJava implements Visitor {
 
     @Override
     public void visit(LiteralNode node) {
-        if(node.isStringify()) {
-            printer.print("String(");
-        }
+//        if(node.hasSiblings()) {
+//            printer.print("String(");
+//        }
         printer.print(node.getLiteral());
-        if(node.isStringify()) {
-            printer.print(")");
-        }
+//        if(node.hasSiblings()) {
+//            printer.print(")");
+//        }
     }
 
     @Override
