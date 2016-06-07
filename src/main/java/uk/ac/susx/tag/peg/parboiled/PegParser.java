@@ -35,6 +35,10 @@ public class PegParser extends BaseParser<Object> {
 
         GrammarNode grammarNode = (GrammarNode) result.resultValue;;
 
+        if(grammarNode == null){
+            throw new ParseException(ErrorUtils.printParseError(result.parseErrors.get(0)));
+        }
+
         return grammarNode;
     }
 
@@ -282,12 +286,6 @@ public class PegParser extends BaseParser<Object> {
         else {
             System.out.println(printNodeTree(result) + '\n');
 
-//            long tic = new Date().getTime();
-//            for(int i = 0; i < 1000; ++i) {
-//                runner.run(input);
-//            }
-//            long toc = new Date().getTime();
-//            System.out.println(""+(toc-tic));
         }
     }
 }

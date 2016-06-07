@@ -5,6 +5,7 @@ import org.parboiled.common.StringUtils;
 import uk.ac.susx.tag.peg.parboiled.ast.*;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -15,12 +16,14 @@ import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 /**
  * Created by simon on 27/05/16.
  */
-public class AstTojava implements Visitor {
+public class AstToJava implements Visitor {
 
     private Printer printer;
+    private final String clsName;
 
-    public AstTojava() {
+    public AstToJava(String clsName) {
         printer = new Printer();
+        this.clsName = clsName;
     }
 
     @Override
@@ -44,7 +47,9 @@ public class AstTojava implements Visitor {
                 break;
         }
 
-        printer.print("public class Grammar extends ");
+        printer.print("public class ");
+        printer.print(clsName);
+        printer.print(" extends ");
         printer.print(cls);
         printer.print(" {");
         printer.println();
@@ -314,20 +319,26 @@ public class AstTojava implements Visitor {
     public static void main(String[] arg) throws Exception{
         PegParser parser  = Parboiled.createParser(PegParser.class);
 
-        String input = "";
+        String peg = "";
 
         try (
-                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/peg.peg"))
+                BufferedReader reader = Files.newBufferedReader(Paths.get(arg[0]))
         ) {
             String line = "";
             while ((line = reader.readLine())!=null) {
 
-                input += line + "\n";
+                peg += line + "\n";
             }
         }
 
 
-        AstTojava astTojava = new AstTojava();
-        System.out.println(astTojava.toJava(parser.parse(input)));
+        AstToJava astToJava = new AstToJava(arg[1]);
+        String java = astToJava.toJava(parser.parse(peg));
+
+        try (
+                BufferedWriter writer = Files.newBufferedWriter(Paths.get(arg[1]+".java"))
+        ) {
+            writer.write(java);
+        }
     }
 }

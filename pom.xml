@@ -13,17 +13,24 @@
 
     <properties>
         <parboiled.version>1.1.7</parboiled.version>
+        <junit.version>4.11</junit.version>
     </properties>
 
     <groupId>uk.ac.susx.tag</groupId>
     <artifactId>parboiledpeg</artifactId>
-    <version>0.1.0</version>
+    <version>0.1.1:</version>
 
     <dependencies>
         <dependency>
             <groupId>org.parboiled</groupId>
             <artifactId>parboiled-java</artifactId>
             <version>${parboiled.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
