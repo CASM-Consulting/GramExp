@@ -18,7 +18,7 @@ try (
     
     boolean match = peg.match(input);
     
-    System.out.printf(input + " : " + (match?"match":"no match"));
+    System.out.println(input + " : " + (match?"match":"no match"));
     
   }
 }
