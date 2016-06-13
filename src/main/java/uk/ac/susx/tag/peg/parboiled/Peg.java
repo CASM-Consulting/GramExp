@@ -178,21 +178,25 @@ public class Peg implements AutoCloseable {
 
     public static void main(String[] args) throws Exception {
 
-        final String input = "aaabbbccc";
 
         // The grammar which echos the parsed characters to theconsole,
         // skipping any white space chars.
-        final String grammar = "" +
-                "D <- &(A !'b') 'a'* B !." +
-                "A <- 'a' A 'b' / :\n" +
-                "B <- 'b' B 'c' / :\n";
+//        final String grammar = "" +
+//                "D <- &(A !'b') 'a'* B !." +
+//                "A <- 'a' A 'b' / :\n" +
+//                "B <- 'b' B 'c' / :\n";
 
-
+        String grammar = "HexNumber <- [0-9a-fA-F]+";
         try (
-                Peg pw = new Peg(grammar);
+            Peg peg = new Peg(grammar);
         ) {
+            for(String input : new String[]{"abc", "aabbcc", "abbc"}) {
+                boolean match = peg.match(input);
 
-            System.out.printf(pw.parse(input));
+                System.out.println(input + " : " + (match?"match":"no match"));
+
+            }
+
         }
 
 
