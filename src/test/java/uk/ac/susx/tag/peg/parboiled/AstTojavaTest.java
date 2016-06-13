@@ -33,7 +33,7 @@ public class AstTojavaTest {
         String clsName = "Peg";
 
 
-        AstToJava astToJava = new AstToJava(clsName);
+        AstToJava astToJava = new AstToJava("some.pkg", clsName);
         String java = astToJava.toJava(parser.parse(peg));
 
         assertEquals(expected, java);

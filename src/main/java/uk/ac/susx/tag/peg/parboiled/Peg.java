@@ -1,4 +1,4 @@
-package uk.ac.susx.tag.peg.parboiled.loading;
+package uk.ac.susx.tag.peg.parboiled;
 
 import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
@@ -8,12 +8,11 @@ import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
-import uk.ac.susx.tag.peg.parboiled.AstToJava;
-import uk.ac.susx.tag.peg.parboiled.GrammarException;
-import uk.ac.susx.tag.peg.parboiled.PegParser;
+import uk.ac.susx.tag.peg.parboiled.loading.ClassReloader;
 
 import javax.tools.*;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,12 +29,13 @@ import java.util.regex.Pattern;
 /**
  * Created by simon on 09/06/16.
  */
-public class Wrapper implements AutoCloseable {
+public class Peg implements AutoCloseable {
 
 
     private final String grammar;
     private String grammarName;
     private String entryPoint;
+    private final Path genSource = Paths.get("target/generated-sources/parboiled");
     private final Path outPath;
     private final Path grammarPath;
     private final Path classesPath;
@@ -44,11 +44,11 @@ public class Wrapper implements AutoCloseable {
     private BaseParser<?> parser;
     private Method entryPointMethod;
 
-    public Wrapper(String grammar) {
-        this("", grammar);
+    public Peg(String grammar) {
+        this("parboiledpeg", grammar);
     }
 
-    public Wrapper(String pkg, String grammar)  {
+    public Peg(String pkg, String grammar)  {
         this.grammar = grammar;
 
         this.pkg = pkg;
@@ -61,8 +61,8 @@ public class Wrapper implements AutoCloseable {
 
         entryPoint = grammarName = match.group(1);
 
-        outPath = Paths.get("target/generated-sources/parboiled").resolve(pkg.replaceAll("\\.", "/"));
-        classesPath = Paths.get("target/classes").resolve(pkg.replaceAll("\\.", "/"));
+        outPath = genSource.resolve(pkg.replaceAll("\\.", "/"));
+        classesPath = Paths.get("target/classes");
 
         grammarPath = outPath.resolve(grammarName + ".java");
 
@@ -83,7 +83,7 @@ public class Wrapper implements AutoCloseable {
 
         PegParser parser  = Parboiled.createParser(PegParser.class);
 
-        AstToJava astToJava = new AstToJava(grammarName);
+        AstToJava astToJava = new AstToJava(pkg, grammarName);
 
         String java = astToJava.toJava(parser.parse(grammar));
 
@@ -122,16 +122,16 @@ public class Wrapper implements AutoCloseable {
             for (Diagnostic<?> diagnostic : diagnostics.getDiagnostics()) {
                 msg += String.format("Error on line %d in %s\n", diagnostic.getLineNumber(), diagnostic);
             }
-            throw new GrammarException("Could not compile project");
+            throw new GrammarException("Could not compile project \n" + msg);
         }
     }
 
     void load() {
         try {
 
-            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{ outPath.toFile().toURI().toURL() });
+            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{ genSource.toFile().toURI().toURL() });
 
-            Class<? extends BaseParser> parserClass = (Class<? extends BaseParser>)Class.forName(grammarName, true, classLoader);
+            Class<? extends BaseParser> parserClass = (Class<? extends BaseParser>)Class.forName(pkg + "." + grammarName, true, classLoader);
 
             parserClass = (Class<? extends BaseParser> )new ClassReloader(classesPath).loadClass(parserClass.getName()).newInstance().getClass();
 
@@ -166,6 +166,16 @@ public class Wrapper implements AutoCloseable {
 
     }
 
+    public boolean match(String input) {
+        try {
+            parse(input);
+            return true;
+        } catch (GrammarException e) {
+            return false;
+        }
+
+    }
+
     public static void main(String[] args) throws Exception {
 
         final String input = "aabbcc";
@@ -176,7 +186,7 @@ public class Wrapper implements AutoCloseable {
 
 
         try (
-                Wrapper pw = new Wrapper("some.package",grammar);
+                Peg pw = new Peg("some.pkg",grammar);
         ) {
 
             System.out.printf(pw.parse(input));
@@ -189,6 +199,6 @@ public class Wrapper implements AutoCloseable {
     @Override
     public void close() throws Exception {
         Files.delete(grammarPath);
-        Files.delete(classesPath.resolve(grammarName+".class"));
+        Files.delete(classesPath.resolve(pkg.replaceAll("\\.", File.separator)).resolve(grammarName+".class"));
     }
 }
