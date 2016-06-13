@@ -178,15 +178,18 @@ public class Peg implements AutoCloseable {
 
     public static void main(String[] args) throws Exception {
 
-        final String input = "aabbcc";
+        final String input = "aaabbbccc";
 
         // The grammar which echos the parsed characters to theconsole,
         // skipping any white space chars.
-        final String grammar = "Test <- 'a'*'b'*'c'* $";
+        final String grammar = "" +
+                "D <- &(A !'b') 'a'* B !." +
+                "A <- 'a' A 'b' / :\n" +
+                "B <- 'b' B 'c' / :\n";
 
 
         try (
-                Peg pw = new Peg("some.pkg",grammar);
+                Peg pw = new Peg(grammar);
         ) {
 
             System.out.printf(pw.parse(input));
