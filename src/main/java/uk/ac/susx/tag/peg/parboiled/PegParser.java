@@ -271,7 +271,7 @@ public class PegParser extends BaseParser<Object> {
         String input = "";
 
         try (
-                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/test.peg"))
+                BufferedReader reader = Files.newBufferedReader(Paths.get("src/main/resources/peg.peg"))
         ) {
             String line = "";
             while ((line = reader.readLine())!=null) {

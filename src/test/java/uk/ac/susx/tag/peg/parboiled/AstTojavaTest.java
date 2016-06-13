@@ -33,13 +33,14 @@ public class AstTojavaTest {
         String clsName = "Peg";
 
 
-        AstToJava astToJava = new AstToJava("some.pkg", clsName);
+        AstToJava astToJava = new AstToJava("parboiled", clsName);
         String java = astToJava.toJava(parser.parse(peg));
 
         assertEquals(expected, java);
     }
 
-    private static final String expected = "import org.parboiled.BaseParser;\n" +
+    private static final String expected = "package parboiled;\n" +
+            "import org.parboiled.BaseParser;\n" +
             "import org.parboiled.Rule;\n" +
             "import org.parboiled.annotations.BuildParseTree;\n" +
             "@BuildParseTree\n" +
@@ -81,7 +82,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule IdentStart( ) {\n" +
-            "  return toRule(FirstOf('_',CharRange('a','z'),CharRange('A','Z')));\n" +
+            "  return toRule(FirstOf('_'CharRange('a','z'),CharRange('A','Z')));\n" +
             " }\n" +
             " \n" +
             " public Rule IdentCont( ) {\n" +
@@ -105,7 +106,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Char( ) {\n" +
-            "  return toRule(FirstOf(Sequence(\"\\\\\",AnyOf(\"nrt'\\\"[]\\\\\")),Sequence(\"\\\\\",CharRange('0','2'),CharRange('0','7'),CharRange('0','7')),Sequence(\"\\\\\",CharRange('0','7'),Optional(CharRange('0','7'))),Sequence(TestNot(\"\\\\\"),ANY)));\n" +
+            "  return toRule(FirstOf(Sequence(\"\\\\\",AnyOf(\"nrt'\\\"[]\\\\\"),),Sequence(\"\\\\\",CharRange('0','2'),CharRange('0','7'),CharRange('0','7')),Sequence(\"\\\\\",CharRange('0','7'),Optional(CharRange('0','7'))),Sequence(TestNot(\"\\\\\"),ANY)));\n" +
             " }\n" +
             " \n" +
             " public Rule LEFTARROW( ) {\n" +

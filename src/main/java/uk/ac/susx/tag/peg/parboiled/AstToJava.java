@@ -336,7 +336,7 @@ public class AstToJava implements Visitor {
         }
 
 
-        AstToJava astToJava = new AstToJava("some.package", arg[1]);
+        AstToJava astToJava = new AstToJava("parboiled", arg[1]);
         String java = astToJava.toJava(parser.parse(peg));
 
         try (
