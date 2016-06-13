@@ -4,3 +4,23 @@ Parboil peg is aparser generator written in Parboiled (https://github.com/sirthi
 
 Some of the structure and approach was inspired by a Parboiled Mardown processor : https://github.com/sirthias/pegdown
 
+```java
+
+
+final String grammar =  "D <- &(A !'b') 'a'* B !." +
+                        "A <- 'a' A 'b' / :\n" +
+                        "B <- 'b' B 'c' / :\n";
+try (
+  Peg pw = new Peg(grammar);
+) {
+
+  for(String input : new String[]{"abc", "aabbcc", "abbc"}) {
+    
+    boolean match = peg.match(input);
+    
+    System.out.printf(input + " : " + (match?"match":"no match"));
+    
+  }
+}
+
+```
