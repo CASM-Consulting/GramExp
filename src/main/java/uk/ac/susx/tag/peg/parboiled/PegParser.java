@@ -72,14 +72,13 @@ public class PegParser extends BaseParser<Object> {
     }
 
     public Rule Prefix() {
-        Var<Literal> optional = new Var<>();
+        Var<Literal> optionalLiteral = new Var<>();
+        Var<CaptureNode> optionalCapture = new Var<>();
         return Sequence(
-                Optional(
-                        Sequence(FirstOf(
-                                AND(),
-                                NOT()
-                        ), optional.set((Literal) pop()))
-                ), Suffix(), push(new PrefixNode(optional.get(), (SuffixNode)pop()))
+                FirstOf(
+                        Sequence(Optional(FirstOf(AND(), NOT()), optionalLiteral.set((Literal) pop())), Suffix()),
+                        Sequence(AOPEN(), Suffix(), Literal(), ACLOSE(), optionalCapture.set(new CaptureNode((LiteralNode)pop())))),
+                push(new PrefixNode(optionalCapture.get(), optionalLiteral.get(), (SuffixNode) pop()))
         );
     }
 
@@ -220,6 +219,16 @@ public class PegParser extends BaseParser<Object> {
     @SuppressSubnodes
     public Rule ACLOSE() {
         return Sequence('>'/*,push(new Literal.CLOSENode())*/, Spacing());
+    }
+
+    @SuppressSubnodes
+    public Rule COPEN( ) {
+        return Sequence('{',Spacing());
+    }
+
+    @SuppressSubnodes
+    public Rule CCLOSE( ) {
+        return Sequence('}',Spacing());
     }
 
     @SuppressSubnodes

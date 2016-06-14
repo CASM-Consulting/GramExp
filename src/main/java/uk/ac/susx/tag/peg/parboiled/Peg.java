@@ -8,6 +8,7 @@ import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
+import org.parboiled.support.ValueStack;
 import uk.ac.susx.tag.peg.parboiled.loading.ClassReloader;
 
 import javax.tools.*;
@@ -21,8 +22,7 @@ import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -166,6 +166,21 @@ public class Peg implements AutoCloseable {
 
     }
 
+
+    private List<Capture> captures() {
+        List<Capture> captures = new ArrayList<>();
+        ValueStack<?> valueStack = parser.getContext().getValueStack();
+        while(true) {
+            try {
+                captures.add(Capture.of((String)valueStack.pop(), (String)valueStack.pop()));
+            } catch (IllegalArgumentException e) {
+                break;
+            }
+        }
+        Collections.reverse(captures);
+        return captures;
+    }
+
     public boolean match(String input) {
         try {
             parse(input);
@@ -173,33 +188,44 @@ public class Peg implements AutoCloseable {
         } catch (GrammarException e) {
             return false;
         }
+    }
 
+    public List<?> find(String input) {
+        try {
+            parse(input);
+            return captures();
+        } catch (GrammarException e) {
+            return null;
+        }
     }
 
     public static void main(String[] args) throws Exception {
 
+        final String grammar = "" +
+                "D <- &(A !'b') 'a'* B !." +
+                "A <- 'a' A 'b' / :\n" +
+                "B <- 'b' B 'c' / :\n";
 
-        // The grammar which echos the parsed characters to theconsole,
-        // skipping any white space chars.
-//        final String grammar = "" +
-//                "D <- &(A !'b') 'a'* B !." +
-//                "A <- 'a' A 'b' / :\n" +
-//                "B <- 'b' B 'c' / :\n";
-
-        String grammar = "HexNumber <- [0-9a-fA-F]+";
         try (
             Peg peg = new Peg(grammar);
         ) {
-            for(String input : new String[]{"abc", "aabbcc", "abbc"}) {
-                boolean match = peg.match(input);
+            for(String input : new String[]{"abc", "aabbcc"}) {
 
-                System.out.println(input + " : " + (match?"match":"no match"));
-
+                System.out.println(peg.parse(input));
             }
-
         }
 
+        final String grammar2 = "/nlp/\n" +
+                "X <- <(Text<'?'> '?') 'question'>";
 
+        try (
+                Peg peg = new Peg(grammar2);
+        ) {
+            for(String input : new String[]{"hello?"}) {
+
+                System.out.println(peg.find(input));
+            }
+        }
     }
 
 

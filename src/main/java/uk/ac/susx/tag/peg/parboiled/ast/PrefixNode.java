@@ -6,15 +6,21 @@ package uk.ac.susx.tag.peg.parboiled.ast;
 public class PrefixNode extends SuperNode {
 
     private final Literal optional;
+    private final CaptureNode capture;
 
-    public PrefixNode(Literal optional, SuffixNode suffixNode)
+    public PrefixNode(CaptureNode capture, Literal optional, SuffixNode suffixNode)
     {
         super(suffixNode);
         this.optional = optional;
+        this.capture = capture;
     }
 
     public Literal getOptional() {
         return optional;
+    }
+
+    public CaptureNode getCapture() {
+        return capture;
     }
 
     @Override

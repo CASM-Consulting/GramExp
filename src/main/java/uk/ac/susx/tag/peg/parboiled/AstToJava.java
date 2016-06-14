@@ -38,6 +38,8 @@ public class AstToJava implements Visitor {
         printer.println();
         printer.print("import org.parboiled.annotations.BuildParseTree;");
         printer.println();
+//        printer.print("import uk.ac.susx.tag.peg.parboiled.Capture;");
+//        printer.println();
         printer.print("@BuildParseTree");
         printer.println();
 
@@ -134,6 +136,7 @@ public class AstToJava implements Visitor {
     @Override
     public void visit(PrefixNode node) {
         Literal optional = node.getOptional();
+        CaptureNode capture = node.getCapture();
         if(optional != null) {
             if(optional instanceof Literal.ANDNode) {
                 printer.print("Test(");
@@ -141,9 +144,15 @@ public class AstToJava implements Visitor {
                 printer.print("TestNot(");
             }
         }
+        if(capture != null) {
+            printer.print("Sequence(");
+        }
         visitChildren(node);
 
-        if(optional!=null) {
+        if(capture != null) {
+            printer.print(",push(match()),push("+capture.getRef()+"))");
+        }
+        if(optional != null) {
             printer.print(")");
         }
     }
