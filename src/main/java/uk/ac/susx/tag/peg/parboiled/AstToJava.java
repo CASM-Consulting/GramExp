@@ -9,7 +9,9 @@ import java.io.BufferedWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 
@@ -21,25 +23,32 @@ public class AstToJava implements Visitor {
     private Printer printer;
     private final String clsName;
     private final String pkg;
+    private final Set<String> groups;
 
     public AstToJava(String pkg, String clsName) {
         printer = new Printer();
         this.clsName = clsName;
         this.pkg = pkg;
+        groups = new HashSet<>();
     }
 
     @Override
     public void visit(GrammarNode node) {
         printer.print("package "+pkg+";");
         printer.println();
-        printer.print("import org.parboiled.BaseParser;");
+        printer.print("import org.parboiled.Action;");
+        printer.print("import org.parboiled.Context;");
         printer.println();
         printer.print("import org.parboiled.Rule;");
         printer.println();
         printer.print("import org.parboiled.annotations.BuildParseTree;");
         printer.println();
-//        printer.print("import uk.ac.susx.tag.peg.parboiled.Capture;");
-//        printer.println();
+        printer.print("import java.util.Set;");
+        printer.println();
+        printer.print("import java.util.HashSet;");
+        printer.println();
+        printer.print("import uk.ac.susx.tag.peg.parboiled.CapturingParser;");
+        printer.println();
         printer.print("@BuildParseTree");
         printer.println();
 
@@ -49,7 +58,7 @@ public class AstToJava implements Visitor {
                 cls = AbstractNlpParser.class.getCanonicalName();
                 break;
             default:
-                cls = "BaseParser<Object>";
+                cls = "CapturingParser<Object>";
                 break;
         }
 
@@ -60,7 +69,24 @@ public class AstToJava implements Visitor {
         printer.print(" {");
         printer.println();
         printer.indent(1);
+//        printer.print("private final Set<String> groups = new HashSet<>();");
+//        printer.println();
+//        printer.print("@Override");
+//        printer.println();
+//        printer.print("public Set<String> getGroups() {return groups;}");
+        printer.println();
         visitChildren(node);
+
+        printer.println();
+        printer.print("{");
+        printer.println();
+        for(String group : groups) {
+            printer.print("addGroup("+group+");");
+            printer.println();
+        }
+        printer.print("}");
+        printer.println();
+
         printer.indent(-1);
         printer.print("}");
     }
@@ -150,7 +176,9 @@ public class AstToJava implements Visitor {
         visitChildren(node);
 
         if(capture != null) {
-            printer.print(",push(match()),push("+capture.getRef()+"))");
+            String ref = capture.getRef();
+            printer.print(",push(match()),push("+ref+"))");
+            groups.add(ref);
         }
         if(optional != null) {
             printer.print(")");

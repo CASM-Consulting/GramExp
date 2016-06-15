@@ -1,6 +1,5 @@
 package uk.ac.susx.tag.peg.parboiled;
 
-import org.parboiled.BaseParser;
 import org.parboiled.Parboiled;
 import org.parboiled.Rule;
 import org.parboiled.common.ImmutableList;
@@ -41,7 +40,7 @@ public class Peg implements AutoCloseable {
     private final Path classesPath;
     private final String pkg;
 
-    private BaseParser<?> parser;
+    private CapturingParser<?> parser;
     private Method entryPointMethod;
 
     public Peg(String grammar) {
@@ -62,7 +61,7 @@ public class Peg implements AutoCloseable {
         entryPoint = grammarName = match.group(1);
 
         outPath = genSource.resolve(pkg.replaceAll("\\.", "/"));
-        classesPath = Paths.get("target/classes");
+        classesPath = Paths.get("custom/classes");
 
         grammarPath = outPath.resolve(grammarName + ".java");
 
@@ -129,18 +128,29 @@ public class Peg implements AutoCloseable {
     void load() {
         try {
 
-            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{ genSource.toFile().toURI().toURL() });
+//            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{ classesPath.toFile().toURI().toURL() });
 
-            Class<? extends BaseParser> parserClass = (Class<? extends BaseParser>)Class.forName(pkg + "." + grammarName, true, classLoader);
+            try (
+                ClassReloader cl1 = new ClassReloader(classesPath);
+                ClassReloader cl2 = new ClassReloader(classesPath)
+            ) {
 
-            parserClass = (Class<? extends BaseParser> )new ClassReloader(classesPath).loadClass(parserClass.getName()).newInstance().getClass();
+                Class<? extends CapturingParser> parserClass = (Class<? extends CapturingParser>) cl2.loadClass(pkg + "." + grammarName);
+                Thread.currentThread().setContextClassLoader(cl1);
 
-            parser = Parboiled.createParser(parserClass);
+                //            parserClass = (Class<? extends CapturingParser> )new ClassReloader(classesPath).loadClass(parserClass.getName());
 
-            entryPointMethod = parserClass.getMethod(entryPoint);
+                parser = Parboiled.createParser(parserClass);
 
-            classLoader.close();
-        } catch(IOException | ClassNotFoundException | NoSuchMethodException | IllegalAccessException | InstantiationException e) {
+                entryPointMethod = parserClass.getMethod(entryPoint);
+
+            }
+        } catch(IOException | NoSuchMethodException e) {
+            try {
+                close();
+            } catch (Exception ee) {
+
+            }
             throw new GrammarException(e);
         }
     }
@@ -164,6 +174,10 @@ public class Peg implements AutoCloseable {
             throw new GrammarException(e);
         }
 
+    }
+
+    public Set<String> groups() {
+        return parser.getGroups();
     }
 
 
@@ -201,7 +215,7 @@ public class Peg implements AutoCloseable {
 
     public static void main(String[] args) throws Exception {
 
-        final String grammar = "" +
+        final String grammar =
                 "D <- &(A !'b') 'a'* B !." +
                 "A <- 'a' A 'b' / :\n" +
                 "B <- 'b' B 'c' / :\n";
@@ -215,12 +229,15 @@ public class Peg implements AutoCloseable {
             }
         }
 
-        final String grammar2 = "/nlp/\n" +
-                "X <- <(Text<'?'> '?') 'question'>";
+        final String grammar2 =
+                "/nlp/\n" +
+                "D <- <(Text<'?'> '?') 'question'>";
 
         try (
                 Peg peg = new Peg(grammar2);
         ) {
+
+            System.out.println(peg.groups());
             for(String input : new String[]{"hello?"}) {
 
                 System.out.println(peg.find(input));

@@ -1,8 +1,6 @@
 package uk.ac.susx.tag.peg.parboiled;
 
-import org.parboiled.BaseParser;
-import org.parboiled.Parboiled;
-import org.parboiled.Rule;
+import org.parboiled.*;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
 import org.parboiled.errors.ErrorUtils;
@@ -10,6 +8,7 @@ import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.Var;
 import uk.ac.susx.tag.peg.parboiled.ast.*;
+import uk.ac.susx.tag.peg.parboiled.ast.Node;
 
 import java.io.BufferedReader;
 import java.nio.file.Files;
@@ -77,7 +76,7 @@ public class PegParser extends BaseParser<Object> {
         return Sequence(
                 FirstOf(
                         Sequence(Optional(FirstOf(AND(), NOT()), optionalLiteral.set((Literal) pop())), Suffix()),
-                        Sequence(AOPEN(), Suffix(), Literal(), ACLOSE(), optionalCapture.set(new CaptureNode((LiteralNode)pop())))),
+                        Sequence(AOPEN(), Suffix(), Literal(), ACLOSE(), optionalCapture.set(new CaptureNode((LiteralNode) pop())))),
                 push(new PrefixNode(optionalCapture.get(), optionalLiteral.get(), (SuffixNode) pop()))
         );
     }

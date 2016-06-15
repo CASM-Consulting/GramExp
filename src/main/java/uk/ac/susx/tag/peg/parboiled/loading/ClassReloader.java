@@ -4,17 +4,20 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Path;
 
 /**
  * Created by simon on 25/05/16.
  */
-public class ClassReloader extends ClassLoader {
+public class ClassReloader extends URLClassLoader {
 
     private Path path;
 
-    public ClassReloader(Path path)  {
-        super();
+    public ClassReloader(Path path) throws MalformedURLException {
+        super(new URL[]{ path.toFile().toURI().toURL()});
         this.path = path;
     }
 

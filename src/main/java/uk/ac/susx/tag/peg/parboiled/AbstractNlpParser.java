@@ -15,7 +15,7 @@ import static org.parboiled.support.ParseTreeUtils.printNodeTree;
  * Created by simon on 26/05/16.
  */
 @BuildParseTree
-abstract public class AbstractNlpParser extends BaseParser<Object> {
+abstract public class AbstractNlpParser extends CapturingParser<Object> {
 
 
     public Rule S() {
