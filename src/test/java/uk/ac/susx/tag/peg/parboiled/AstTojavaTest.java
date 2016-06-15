@@ -33,14 +33,13 @@ public class AstTojavaTest {
         String clsName = "Peg";
 
 
-        AstToJava astToJava = new AstToJava("parboiled", clsName);
+        AstToJava astToJava = new AstToJava(clsName);
         String java = astToJava.toJava(parser.parse(peg));
 
         assertEquals(expected, java);
     }
 
-    private static final String expected = "package parboiled;\n" +
-            "import org.parboiled.Action;import org.parboiled.Context;\n" +
+    private static final String expected = "import org.parboiled.Action;import org.parboiled.Context;\n" +
             "import org.parboiled.Rule;\n" +
             "import org.parboiled.annotations.BuildParseTree;\n" +
             "import java.util.Set;\n" +

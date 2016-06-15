@@ -12,15 +12,11 @@ import uk.ac.susx.tag.peg.parboiled.loading.ClassReloader;
 
 import javax.tools.*;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,23 +30,18 @@ public class Peg implements AutoCloseable {
     private final String grammar;
     private String grammarName;
     private String entryPoint;
-    private final Path genSource = Paths.get("target/generated-sources/parboiled");
-    private final Path outPath;
+    private final Path sourcePath;
+    private final Path basePath;
     private final Path grammarPath;
     private final Path classesPath;
-    private final String pkg;
 
     private CapturingParser<?> parser;
     private Method entryPointMethod;
 
-    public Peg(String grammar) {
-        this("parboiledpeg", grammar);
-    }
-
-    public Peg(String pkg, String grammar)  {
+    public Peg(String grammar)  {
         this.grammar = grammar;
 
-        this.pkg = pkg;
+        basePath = Util.getTempUniqueDir();
 
         Matcher match = Pattern.compile("(?m)(\\w+)\\s*<-.+").matcher(grammar);
 
@@ -60,15 +51,16 @@ public class Peg implements AutoCloseable {
 
         entryPoint = grammarName = match.group(1);
 
-        outPath = genSource.resolve(pkg.replaceAll("\\.", "/"));
-        classesPath = Paths.get("custom/classes");
+        sourcePath = basePath.resolve("source");
 
-        grammarPath = outPath.resolve(grammarName + ".java");
+        classesPath = basePath.resolve("classes");
+
+        grammarPath = sourcePath.resolve(grammarName + ".java");
 
         try {
 
             Files.createDirectories(classesPath);
-            Files.createDirectories(outPath);
+            Files.createDirectories(sourcePath);
         } catch (IOException e) {
             throw new GrammarException(e);
         }
@@ -82,7 +74,7 @@ public class Peg implements AutoCloseable {
 
         PegParser parser  = Parboiled.createParser(PegParser.class);
 
-        AstToJava astToJava = new AstToJava(pkg, grammarName);
+        AstToJava astToJava = new AstToJava(grammarName);
 
         String java = astToJava.toJava(parser.parse(grammar));
 
@@ -106,7 +98,7 @@ public class Peg implements AutoCloseable {
 
         Iterable<? extends JavaFileObject> javaObjects = fileManager.getJavaFileObjectsFromStrings(
             ImmutableList.of(
-                outPath.resolve(grammarName).toString() + ".java"
+                grammarPath.toString()
             )
         );
 
@@ -135,7 +127,7 @@ public class Peg implements AutoCloseable {
                 ClassReloader cl2 = new ClassReloader(classesPath)
             ) {
 
-                Class<? extends CapturingParser> parserClass = (Class<? extends CapturingParser>) cl2.loadClass(pkg + "." + grammarName);
+                Class<? extends CapturingParser> parserClass = (Class<? extends CapturingParser>) cl2.loadClass(grammarName);
                 Thread.currentThread().setContextClassLoader(cl1);
 
                 //            parserClass = (Class<? extends CapturingParser> )new ClassReloader(classesPath).loadClass(parserClass.getName());
@@ -252,7 +244,6 @@ public class Peg implements AutoCloseable {
 
     @Override
     public void close() throws Exception {
-        Files.delete(grammarPath);
-        Files.delete(classesPath.resolve(pkg.replaceAll("\\.", File.separator)).resolve(grammarName+".class"));
+        Util.deleteFileOrFolder(basePath);
     }
 }

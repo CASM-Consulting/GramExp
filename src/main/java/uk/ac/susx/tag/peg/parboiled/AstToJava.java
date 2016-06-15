@@ -22,20 +22,18 @@ public class AstToJava implements Visitor {
 
     private Printer printer;
     private final String clsName;
-    private final String pkg;
     private final Set<String> groups;
 
-    public AstToJava(String pkg, String clsName) {
+    public AstToJava(String clsName) {
         printer = new Printer();
         this.clsName = clsName;
-        this.pkg = pkg;
         groups = new HashSet<>();
     }
 
     @Override
     public void visit(GrammarNode node) {
-        printer.print("package "+pkg+";");
-        printer.println();
+//        printer.print("package "+pkg+";");
+//        printer.println();
         printer.print("import org.parboiled.Action;");
         printer.print("import org.parboiled.Context;");
         printer.println();
@@ -373,7 +371,7 @@ public class AstToJava implements Visitor {
         }
 
 
-        AstToJava astToJava = new AstToJava("parboiled", arg[1]);
+        AstToJava astToJava = new AstToJava(arg[1]);
         String java = astToJava.toJava(parser.parse(peg));
 
         try (
