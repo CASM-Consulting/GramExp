@@ -67,5 +67,13 @@ abstract public class AbstractNlpParser extends CapturingParser<Object> {
         return Sequence(Optional('\r'), Ch('\n'));
     }
 
+    @SuppressSubnodes
+    public Rule Ic(String str) {
+        return IgnoreCase(str);
+    }
+    @SuppressSubnodes
+    public Rule Ic(char... str) {
+        return IgnoreCase(str);
+    }
 
 }

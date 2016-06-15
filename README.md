@@ -23,4 +23,22 @@ try (
   }
 }
 
+Named capture example:
+
+final String grammar2 =
+        "/nlp/\n" +
+        "D <- Q A $\n" +
+        "Q <- <(Text<'?'> '?') 'question'> S?\n" +
+        "A <- <(Ic<'yes'> / Ic<'y'> / Ic<'no'> / Ic<'n'> ) 'answer'>";
+
+try (
+        Peg peg = new Peg(grammar2);
+) {
+
+    System.out.println(peg.groups());
+    for(String input : new String[]{"hello? no"}) {
+        System.out.println(peg.find(input));
+    }
+}
+
 ```

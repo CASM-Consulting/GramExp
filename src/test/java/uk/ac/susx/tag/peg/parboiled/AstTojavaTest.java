@@ -40,12 +40,16 @@ public class AstTojavaTest {
     }
 
     private static final String expected = "package parboiled;\n" +
-            "import org.parboiled.BaseParser;\n" +
+            "import org.parboiled.Action;import org.parboiled.Context;\n" +
             "import org.parboiled.Rule;\n" +
             "import org.parboiled.annotations.BuildParseTree;\n" +
+            "import java.util.Set;\n" +
+            "import java.util.HashSet;\n" +
+            "import uk.ac.susx.tag.peg.parboiled.CapturingParser;\n" +
             "@BuildParseTree\n" +
-            "public class Peg extends BaseParser<Object> {\n" +
-            "public Rule Grammar( ) {\n" +
+            "public class Peg extends CapturingParser<Object> {\n" +
+            "\n" +
+            " public Rule Grammar( ) {\n" +
             "  return toRule(Sequence(Spacing(),Optional(Mode()),OneOrMore(Definition()),EndOfFile()));\n" +
             " }\n" +
             " \n" +
@@ -66,7 +70,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Prefix( ) {\n" +
-            "  return toRule(Sequence(Optional(FirstOf(AND(),NOT())),Suffix()));\n" +
+            "  return toRule(FirstOf(Sequence(Optional(FirstOf(AND(),NOT())),Suffix()),Sequence(AOPEN(),Suffix(),Literal(),ACLOSE())));\n" +
             " }\n" +
             " \n" +
             " public Rule Suffix( ) {\n" +
@@ -193,5 +197,8 @@ public class AstTojavaTest {
             "  return toRule(TestNot(ANY));\n" +
             " }\n" +
             " \n" +
+            " \n" +
+            " {\n" +
+            " }\n" +
             " }";
 }

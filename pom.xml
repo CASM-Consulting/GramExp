@@ -18,7 +18,7 @@
 
     <groupId>uk.ac.susx.tag</groupId>
     <artifactId>parboiledpeg</artifactId>
-    <version>0.2.1</version>
+    <version>0.2.2</version>
 
     <dependencies>
         <dependency>
