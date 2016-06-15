@@ -176,6 +176,7 @@ public class Peg implements AutoCloseable {
 
     }
 
+
     public Set<String> groups() {
         return parser.getGroups();
     }
@@ -204,7 +205,7 @@ public class Peg implements AutoCloseable {
         }
     }
 
-    public List<?> find(String input) {
+    public List<Capture> find(String input) {
         try {
             parse(input);
             return captures();
