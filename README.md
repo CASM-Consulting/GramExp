@@ -28,7 +28,7 @@ Named capture example:
 final String grammar2 =
         "/nlp/\n" +
         "D <- Q A $\n" +
-        "Q <- <(Text<'?'> '?') 'question'> S?\n" +
+        "Q <- <Text<'?'> 'question'> S?\n" +
         "A <- <(Ic<'yes'> / Ic<'y'> / Ic<'no'> / Ic<'n'> ) 'answer'>";
 
 try (
