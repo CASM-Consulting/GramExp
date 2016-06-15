@@ -36,8 +36,11 @@ try (
 ) {
 
     System.out.println(peg.groups());
+    //[answer, question]
+    
     for(String input : new String[]{"hello? no"}) {
         System.out.println(peg.find(input));
+        //[question=hello?, answer=no]
     }
 }
 
