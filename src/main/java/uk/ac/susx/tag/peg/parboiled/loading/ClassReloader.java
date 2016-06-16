@@ -15,10 +15,12 @@ import java.nio.file.Path;
 public class ClassReloader extends URLClassLoader {
 
     private Path path;
+    private String id;
 
-    public ClassReloader(Path path) throws MalformedURLException {
+    public ClassReloader(Path path, String id) throws MalformedURLException {
         super(new URL[]{ path.toFile().toURI().toURL()});
         this.path = path;
+        this.id = id;
     }
 
     @Override
@@ -37,12 +39,14 @@ public class ClassReloader extends URLClassLoader {
 
     private byte[] loadClassData(String className) throws IOException {
         File f = path.resolve(className.replaceAll("\\.", "/") + ".class").toFile();
-        int size = (int) f.length();
-        byte[] buff = new byte[size];
-        FileInputStream fis = new FileInputStream(f);
-        DataInputStream dis = new DataInputStream(fis);
-        dis.readFully(buff);
-        dis.close();
-        return buff;
+        try (
+            FileInputStream fis = new FileInputStream(f);
+            DataInputStream dis = new DataInputStream(fis)
+        ) {
+            int size = (int) f.length();
+            byte[] buff = new byte[size];
+            dis.readFully(buff);
+            return buff;
+        }
     }
 }

@@ -8,6 +8,7 @@ import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParseTreeUtils;
 import org.parboiled.support.ParsingResult;
 import org.parboiled.support.ValueStack;
+import org.parboiled.transform.AsmUtils;
 import uk.ac.susx.tag.peg.parboiled.loading.ClassReloader;
 
 import javax.tools.*;
@@ -18,6 +19,8 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Future;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -28,20 +31,23 @@ public class Peg implements AutoCloseable {
 
 
     private final String grammar;
-    private String grammarName;
-    private String entryPoint;
+    private final String className;
+    private final String entryPoint;
     private final Path sourcePath;
     private final Path basePath;
-    private final Path grammarPath;
+    private final Path classPath;
     private final Path classesPath;
 
     private CapturingParser<?> parser;
     private Method entryPointMethod;
 
+    private Thread task;
+
     public Peg(String grammar)  {
         this.grammar = grammar;
 
-        basePath = Util.getTempUniqueDir();
+        basePath = Util.getUniqueTempDir();
+        className = Util.getUniqueClassName();
 
         Matcher match = Pattern.compile("(?m)(\\w+)\\s*<-.+").matcher(grammar);
 
@@ -49,13 +55,13 @@ public class Peg implements AutoCloseable {
             throw new GrammarException("can't find entry point $grammar");
         }
 
-        entryPoint = grammarName = match.group(1);
+        entryPoint = match.group(1);
 
         sourcePath = basePath.resolve("source");
 
         classesPath = basePath.resolve("classes");
 
-        grammarPath = sourcePath.resolve(grammarName + ".java");
+        classPath = sourcePath.resolve(className + ".java");
 
         try {
 
@@ -65,21 +71,37 @@ public class Peg implements AutoCloseable {
             throw new GrammarException(e);
         }
 
-        generateCode();
-        compile();
-        load();
+
+
+        Thread task = new Thread(()->{
+            generateCode();
+            compile();
+            load();
+            Thread.currentThread().setContextClassLoader(this.getClass().getClassLoader());
+
+        });
+
+        task.run();
+        try {
+            task.join();
+        } catch (InterruptedException e) {
+            //pass
+        }
+
+
+
     }
 
     void generateCode() {
 
         PegParser parser  = Parboiled.createParser(PegParser.class);
 
-        AstToJava astToJava = new AstToJava(grammarName);
+        AstToJava astToJava = new AstToJava(className);
 
         String java = astToJava.toJava(parser.parse(grammar));
 
         try (
-            BufferedWriter writer = Files.newBufferedWriter(grammarPath)
+            BufferedWriter writer = Files.newBufferedWriter(classPath)
             ) {
             writer.write(java);
         } catch (IOException e) {
@@ -98,7 +120,7 @@ public class Peg implements AutoCloseable {
 
         Iterable<? extends JavaFileObject> javaObjects = fileManager.getJavaFileObjectsFromStrings(
             ImmutableList.of(
-                grammarPath.toString()
+                    classPath.toString()
             )
         );
 
@@ -123,12 +145,13 @@ public class Peg implements AutoCloseable {
 //            URLClassLoader classLoader = URLClassLoader.newInstance(new URL[]{ classesPath.toFile().toURI().toURL() });
 
             try (
-                ClassReloader cl1 = new ClassReloader(classesPath);
-                ClassReloader cl2 = new ClassReloader(classesPath)
+                ClassReloader cl1 = new ClassReloader(classesPath, "1");
+                ClassReloader cl2 = new ClassReloader(classesPath, "2")
             ) {
 
-                Class<? extends CapturingParser> parserClass = (Class<? extends CapturingParser>) cl2.loadClass(grammarName);
-                Thread.currentThread().setContextClassLoader(cl1);
+                Class<? extends CapturingParser> parserClass = (Class<? extends CapturingParser>) cl1.loadClass(className);
+
+                Thread.currentThread().setContextClassLoader(cl2);
 
                 //            parserClass = (Class<? extends CapturingParser> )new ClassReloader(classesPath).loadClass(parserClass.getName());
 
@@ -208,36 +231,47 @@ public class Peg implements AutoCloseable {
 
     public static void main(String[] args) throws Exception {
 
-        final String grammar =
-                "D <- &(A !'b') 'a'* B !." +
-                "A <- 'a' A 'b' / :\n" +
-                "B <- 'b' B 'c' / :\n";
+//        Properties prop = System.getProperties();
+//        prop.list(System.out);
 
-        try (
-            Peg peg = new Peg(grammar);
-        ) {
-            for(String input : new String[]{"abc", "aabbcc"}) {
+        while(true) {
 
-                System.out.println(peg.parse(input));
+            final String grammar =
+                    "/nlp/\n" +
+                            "T <- (Q A)+\n" +
+                            "Q <- <Text<'?'> 'Qu'> S\n" +
+                            "A <- <Text<End> 'An'>\n" +
+                            "End <- '.' / $";
+
+            try (
+                    Peg peg = new Peg(grammar);
+            ) {
+//                for(String input : new String[]{"hello? yes"}) {
+//
+//                    System.out.println(peg.parse(input));
+//                }
             }
-        }
 
-        final String grammar2 =
-                "/nlp/\n" +
-                "D <- Q A $\n" +
-                "Q <- <Text<'?'> 'question'> S?\n" +
-                "A <- <(Ic<'yes'> / Ic<'y'> / Ic<'no'> / Ic<'n'> ) 'answer'>";
+            final String grammar2 =
+                    "/nlp/\n" +
+                            "T <- (Q A)+\n" +
+                            "Q <- <Text<'?'> 'Qu'> S\n" +
+                            "A <- <Text<End1> 'An'>\n" +
+                            "End1 <- '.' / $";
 
-        try (
-                Peg peg = new Peg(grammar2);
-        ) {
+            try (
+                    Peg peg = new Peg(grammar2);
+            ) {
 
-            System.out.println(peg.groups());
-            for(String input : new String[]{"hello? no"}) {
-                System.out.println(peg.parse(input));
-
-                System.out.println(peg.find(input));
+//                System.out.println(peg.groups());
+//                for(String input : new String[]{"hello? no"}) {
+//                    System.out.println(peg.parse(input));
+//
+//                    System.out.println(peg.find(input));
+//                }
             }
+
+            Thread.sleep(1);
         }
     }
 
@@ -245,5 +279,9 @@ public class Peg implements AutoCloseable {
     @Override
     public void close() throws Exception {
         Util.deleteFileOrFolder(basePath);
+        parser = null;
+        entryPointMethod = null;
+        AsmUtils.clearClassCache();
+//        Thread.currentThread().setContextClassLoader(Class.forName(this.getClass().getName()).getClassLoader());
     }
 }

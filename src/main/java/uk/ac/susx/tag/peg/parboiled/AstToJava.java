@@ -20,7 +20,7 @@ import static org.parboiled.support.ParseTreeUtils.printNodeTree;
  */
 public class AstToJava implements Visitor {
 
-    private Printer printer;
+    private final Printer printer;
     private final String clsName;
     private final Set<String> groups;
 
@@ -335,7 +335,9 @@ public class AstToJava implements Visitor {
 
     public String toJava(GrammarNode grammar) {
         grammar.accept(this);
-        return printer.getString();
+        String java = printer.getString();
+        printer.clear();
+        return java;
     }
 
 

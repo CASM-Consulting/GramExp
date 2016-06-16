@@ -1,5 +1,7 @@
 package uk.ac.susx.tag.peg.parboiled;
 
+import uk.ac.susx.tag.peg.parboiled.ast.ClassNode;
+
 import java.io.IOException;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -13,20 +15,33 @@ import java.util.UUID;
  */
 public class Util {
 
-    public static Path getTempUniqueDir() {
+    public static String getUniqueClassName() {
+        String unique = null;
+        do {
+            unique = "_"+UUID.randomUUID().toString().replaceAll("-", "");
+            try {
+                Class.forName(unique);
+                unique = null;
+            } catch (ClassNotFoundException e) {
+            }
+
+        } while (unique == null);
+
+        return unique;
+    }
+
+    public static Path getUniqueTempDir() {
 
         int limit = 10;
-
-        String unqiue = UUID.randomUUID().toString();
 
         Path tempDir = null;
 
         int tries = 0;
         while (tempDir == null && tries < limit) {
-
             try {
+                String unique = UUID.randomUUID().toString();
 
-                tempDir = Files.createTempDirectory(unqiue);
+                tempDir = Files.createTempDirectory(unique);
 
             } catch (IOException e) {
                 ++tries;
