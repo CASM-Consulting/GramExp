@@ -39,7 +39,8 @@ public class AstTojavaTest {
         assertEquals(expected, java);
     }
 
-    private static final String expected = "import org.parboiled.Action;import org.parboiled.Context;\n" +
+    private static final String expected = "import org.parboiled.Action;\n" +
+            "import org.parboiled.Context;\n" +
             "import org.parboiled.Rule;\n" +
             "import org.parboiled.annotations.BuildParseTree;\n" +
             "import java.util.Set;\n" +
@@ -73,7 +74,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Suffix( ) {\n" +
-            "  return toRule(Sequence(Primary(),Optional(FirstOf(QUESTION(),STAR(),PLUS()))));\n" +
+            "  return toRule(Sequence(Primary(),Optional(FirstOf(QUESTION(),STAR(),PLUS())),Optional(FirstOf(PUSH(),POP()))));\n" +
             " }\n" +
             " \n" +
             " public Rule Primary( ) {\n" +
@@ -105,7 +106,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Range( ) {\n" +
-            "  return toRule(FirstOf(Sequence(Char(),'-',Char()),Char()));\n" +
+            "  return toRule(FirstOf(Sequence(Char(),'-',TestNot(']'),Char()),Char()));\n" +
             " }\n" +
             " \n" +
             " public Rule Char( ) {\n" +
@@ -174,6 +175,14 @@ public class AstTojavaTest {
             " \n" +
             " public Rule ACLOSE( ) {\n" +
             "  return toRule(Sequence('>',Spacing()));\n" +
+            " }\n" +
+            " \n" +
+            " public Rule PUSH( ) {\n" +
+            "  return toRule(Sequence(\"push\",Spacing()));\n" +
+            " }\n" +
+            " \n" +
+            " public Rule POP( ) {\n" +
+            "  return toRule(Sequence(\"pop\",Spacing()));\n" +
             " }\n" +
             " \n" +
             " public Rule Spacing( ) {\n" +

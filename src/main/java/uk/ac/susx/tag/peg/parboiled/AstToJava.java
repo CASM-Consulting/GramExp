@@ -1,5 +1,6 @@
 package uk.ac.susx.tag.peg.parboiled;
 
+import com.sun.org.apache.bcel.internal.generic.POP;
 import org.parboiled.Parboiled;
 import org.parboiled.common.StringUtils;
 import uk.ac.susx.tag.peg.parboiled.ast.*;
@@ -35,6 +36,7 @@ public class AstToJava implements Visitor {
 //        printer.print("package "+pkg+";");
 //        printer.println();
         printer.print("import org.parboiled.Action;");
+        printer.println();
         printer.print("import org.parboiled.Context;");
         printer.println();
         printer.print("import org.parboiled.Rule;");
@@ -175,7 +177,7 @@ public class AstToJava implements Visitor {
 
         if(capture != null) {
             String ref = capture.getRef();
-            printer.print(",push(match()),push("+ref+"))");
+            printer.print(",addCapture("+ref+", match()))");
             groups.add(ref);
         }
         if(optional != null) {
@@ -185,6 +187,12 @@ public class AstToJava implements Visitor {
 
     @Override
     public void visit(SuffixNode node) {
+
+        SuperNode pp = node.getPP();
+
+        if(pp!=null) {
+            printer.print("Sequence(");
+        }
 
         Literal optional = node.getOptional();
         if(optional != null ) {
@@ -201,6 +209,12 @@ public class AstToJava implements Visitor {
         visitChildren(node);
 
         if(optional !=null) {
+            printer.print(")");
+        }
+
+        if(pp != null) {
+            printer.print(",");
+            pp.accept(this);
             printer.print(")");
         }
     }
@@ -306,6 +320,16 @@ public class AstToJava implements Visitor {
         if(n > 1) {
             printer.print(")");
         }
+    }
+
+    @Override
+    public void visit(PushNode node) {
+        printer.print("push(match())");
+    }
+
+    @Override
+    public void visit(PopNode node) {
+        printer.print("pop().equals(match())");
     }
 
     @Override

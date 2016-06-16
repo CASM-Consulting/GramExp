@@ -83,6 +83,7 @@ public class PegParser extends BaseParser<Object> {
 
     public Rule Suffix() {
         Var<Literal> optional = new Var<>();
+        Var<SuperNode> pp = new Var<>();
         return Sequence(Primary(),
                 Optional(
                         Sequence(FirstOf(
@@ -90,7 +91,14 @@ public class PegParser extends BaseParser<Object> {
                                 STAR(),
                                 PLUS()
                         ), optional.set((Literal) pop()))
-                ), push(new SuffixNode((PrimaryNode)pop(), optional.get()))
+                ),
+                Optional(
+                        Sequence(FirstOf(
+                                PUSH(),
+                                POP()
+                        ), pp.set((SuperNode)pop()))
+                ),
+                push(new SuffixNode((PrimaryNode)pop(), optional.get(), pp.get()))
         );
     }
 
@@ -152,16 +160,16 @@ public class PegParser extends BaseParser<Object> {
     }
 
     public Rule Range() {
-        return Sequence(FirstOf(Sequence(Char(), '-', Char()), Char()), push(match()));
+        return Sequence(FirstOf(Sequence(Char(), '-', TestNot(']'), Char()), Char()), push(match()));
     }
 
     @SuppressSubnodes
     public Rule Char() {
         return FirstOf(
-                Sequence('\\', AnyOf("'\"[]\\")),
-                Sequence('\\', CharRange('0','2'), CharRange('0','7'), CharRange('0','7')),
-                Sequence('\\', CharRange('0','7'), Optional(CharRange('0','7'))),
-                Sequence(TestNot('\\'), ANY)
+                Sequence("\\", AnyOf("nrt'\"[]\\")),
+                Sequence("\\", CharRange('0','2'), CharRange('0','7'), CharRange('0','7')),
+                Sequence("\\", CharRange('0','7'), Optional(CharRange('0','7'))),
+                Sequence(TestNot("\\"), ANY)
         );
     }
 
@@ -228,6 +236,15 @@ public class PegParser extends BaseParser<Object> {
     @SuppressSubnodes
     public Rule CCLOSE( ) {
         return Sequence('}',Spacing());
+    }
+
+
+    public Rule PUSH( ) {
+        return toRule(Sequence("push", push(new PushNode()), Spacing()));
+    }
+
+    public Rule POP( ) {
+        return toRule(Sequence("pop", push(new PopNode()), Spacing()));
     }
 
     @SuppressSubnodes

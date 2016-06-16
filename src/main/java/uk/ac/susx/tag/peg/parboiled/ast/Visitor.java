@@ -22,6 +22,8 @@ public interface Visitor {
     void visit(EndOfFileNode node);
     void visit(Literal.EMPTYNode node);
     void visit(Literal.NOTHINGNode node);
+    void visit(PushNode node);
+    void visit(PopNode node);
 
 
 }

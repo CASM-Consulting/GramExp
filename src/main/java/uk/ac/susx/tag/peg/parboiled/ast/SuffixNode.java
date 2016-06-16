@@ -6,16 +6,22 @@ package uk.ac.susx.tag.peg.parboiled.ast;
 public class SuffixNode extends SuperNode {
 
     private Literal optional;
+    private SuperNode pp;
 
-    public SuffixNode(PrimaryNode primaryNode, Literal optional) {
+    public SuffixNode(PrimaryNode primaryNode, Literal optional, SuperNode pp) {
         super(primaryNode);
 
         this.optional = optional;
-
+        this.pp = pp;
     }
 
     public Literal getOptional() {
+
         return optional;
+    }
+
+    public SuperNode getPP() {
+        return pp;
     }
 
     @Override

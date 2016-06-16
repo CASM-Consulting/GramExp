@@ -100,6 +100,8 @@ public class Peg implements AutoCloseable {
 
         String java = astToJava.toJava(parser.parse(grammar));
 
+        System.out.println(java);
+
         try (
             BufferedWriter writer = Files.newBufferedWriter(classPath)
             ) {
@@ -175,8 +177,12 @@ public class Peg implements AutoCloseable {
     public String parse(String input) {
         try {
 
+            parser.captures.clear();
+
             ReportingParseRunner runner = new ReportingParseRunner <>((Rule)entryPointMethod.invoke(parser));
+
             ParsingResult<?> result = runner.run(input);
+
 
             if (!result.parseErrors.isEmpty()) {
                 throw new GrammarException(ErrorUtils.printParseError(result.parseErrors.get(0)));
@@ -198,16 +204,19 @@ public class Peg implements AutoCloseable {
 
 
     private List<Capture> captures() {
-        List<Capture> captures = new ArrayList<>();
-        ValueStack<?> valueStack = parser.getContext().getValueStack();
-        while(true) {
-            try {
-                captures.add(Capture.of((String)valueStack.pop(), (String)valueStack.pop()));
-            } catch (IllegalArgumentException e) {
-                break;
-            }
-        }
-        Collections.reverse(captures);
+        List<Capture> captures = parser.captures;
+//        List<Capture> captures = new ArrayList<>();
+//        if(parser.getContext()!=null) {
+//            ValueStack<?> valueStack = parser.getContext().getValueStack();
+//            while(true) {
+//                try {
+//                    captures.add(Capture.of((String)valueStack.pop(), (String)valueStack.pop()));
+//                } catch (IllegalArgumentException e) {
+//                    break;
+//                }
+//            }
+//            Collections.reverse(captures);
+//        }
         return captures;
     }
 
@@ -234,45 +243,45 @@ public class Peg implements AutoCloseable {
 //        Properties prop = System.getProperties();
 //        prop.list(System.out);
 
-        while(true) {
 
-            final String grammar =
-                    "/nlp/\n" +
-                            "T <- (Q A)+\n" +
-                            "Q <- <Text<'?'> 'Qu'> S\n" +
-                            "A <- <Text<End> 'An'>\n" +
-                            "End <- '.' / $";
-
-            try (
-                    Peg peg = new Peg(grammar);
-            ) {
+//        final String grammar =
+//                "/nlp/\n" +
+//                        "T <- (Q A)+\n" +
+//                        "Q <- <Text<'?'> 'Qu'> S\n" +
+//                        "A <- <Text<End> 'An'>\n" +
+//                        "End <- '.' / $";
+//
+//        try (
+//                Peg peg = new Peg(grammar);
+//        ) {
 //                for(String input : new String[]{"hello? yes"}) {
 //
 //                    System.out.println(peg.parse(input));
 //                }
-            }
+//        }
 
-            final String grammar2 =
-                    "/nlp/\n" +
-                            "T <- (Q A)+\n" +
-                            "Q <- <Text<'?'> 'Qu'> S\n" +
-                            "A <- <Text<End1> 'An'>\n" +
-                            "End1 <- '.' / $";
+        final String grammar2 =
+                "/nlp/\n" +
+                "document <- (doctype / text / tag)* $\n" +
+                "tag <- open_tag  (text / tag)* close_tag / self_close \n" +
+                "open_tag <- \"<\" ([0-9a-zA-Z =\"'#\\[-])+ push '>'\n" +
+                "close_tag <- \"</\" [0-9a-zA-Z]+ pop \">\"\n" +
+                "self_close <- \"<\" [0-9a-zA-Z]+ ' ' \"/>\"\n" +
+                "doctype <- \"<!DOCTYPE \" [0-9a-zA-Z]+ \">\"\n" +
+                "text <- <(!'<'.)+ 'text'>";
 
-            try (
-                    Peg peg = new Peg(grammar2);
-            ) {
+        try (
+                Peg peg = new Peg(grammar2);
+        ) {
 
-//                System.out.println(peg.groups());
-//                for(String input : new String[]{"hello? no"}) {
-//                    System.out.println(peg.parse(input));
-//
-//                    System.out.println(peg.find(input));
-//                }
-            }
+                System.out.println(peg.groups());
+                for(String input : new String[]{"<html><body>content <br /></body></html>"}) {
+                    System.out.println(peg.parse(input));
 
-            Thread.sleep(1);
+                    System.out.println(peg.find(input));
+                }
         }
+
     }
 
 
