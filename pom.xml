@@ -17,8 +17,8 @@
     </properties>
 
     <groupId>uk.ac.susx.tag</groupId>
-    <artifactId>parboiledpeg</artifactId>
-    <version>0.3.0</version>
+    <artifactId>gramexp</artifactId>
+    <version>0.3.1</version>
 
     <dependencies>
         <dependency>

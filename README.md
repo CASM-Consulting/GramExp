@@ -1,6 +1,6 @@
 # GramExp
 
-GramExp is a string matching and capturing library with the aim of being more expressive and maintianable than stanard regular expression libraries. GramExp's is based on Parser Expression Grammars described here : http://www.brynosaurus.com/pub/lang/peg.pdf 
+GramExp is a string matching and capturing library with the aim of being more expressive and maintianable than stanard regular expression libraries. GramExp's is based on Parser Expression Grammars described here : http://www.brynosaurus.com/pub/lang/gramExp.pdf
 
   _"PEGs are stylistically similar to CFGs with RE-like features added, much like Extended Backus-Naur Form (EBNF) notation"_
 
@@ -20,32 +20,33 @@ try (
 
   for(String input : new String[]{"abc", "aabbcc", "abbc"}) {
     
-    boolean match = peg.match(input);
+    boolean match = gramExp.match(input);
     
     System.out.println(input + " : " + (match?"match":"no match"));
   }
 }
 
-//html parser with named capture example and balanced tags
+//basic html parser with named capture example and balanced tags (via push and pop)
 
 String grammar2 =
         "/nlp/\n" +
         "document <- (tag / text)* $\n" +
-        "tag <- open_tag  (text / tag)* close_tag / self_close \n" +
-        "open_tag <- '<' tag_type push (S [0-9a-zA-Z =\"'#\\[-]+)? '>'\n" +
+        "tag <- open_tag (text / tag)* close_tag / self_close \n" +
+        "open_tag <- '<' tag_type push (S attr)? '>'\n" +
         "close_tag <- '</' tag_type pop '>'\n" +
         "self_close <- '<' tag_type '/'? '>'\n" +
+        "attr <- <[0-9a-zA-Z =\"'#\\[-]+ 'attr'>\n" +
         "tag_type <- <[0-9a-zA-Z]+ 'tag'>\n" +
         "text <- <(!'<'.)+ 'content'>";
 
 try (
-        Peg peg = new Peg(grammar2);
+        Peg gramExp = new Peg(grammar2);
 ) {
 
-        System.out.println(peg.groups());
+        System.out.println(gramExp.groups());
         for(String input : new String[]{"<html><body>content<br>new line<br/>another line<br>badgers</body></html>"}) {
         
-            System.out.println(peg.find(input));
+            System.out.println(gramExp.find(input));
             //[tag=html, tag=body, content=content, tag=br, content=new line, tag=br, content=another line, tag=br, content=badgers, tag=body, tag=html]
         }
 }
