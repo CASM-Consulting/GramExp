@@ -15,7 +15,7 @@ String grammar =  "D <- &(A !'b') 'a'* B !." +
                         "A <- 'a' A 'b' / :\n" +
                         "B <- 'b' B 'c' / :\n";
 try (
-  Peg pw = new Peg(grammar);
+  GramExp gramExp = new GramExp(grammar);
 ) {
 
   for(String input : new String[]{"abc", "aabbcc", "abbc"}) {
@@ -40,7 +40,7 @@ String grammar2 =
         "text <- <(!'<'.)+ 'content'>";
 
 try (
-        Peg gramExp = new Peg(grammar2);
+        GramExp gramExp = new GramExp(grammar2);
 ) {
 
         System.out.println(gramExp.groups());
