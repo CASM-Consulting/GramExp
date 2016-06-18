@@ -15,7 +15,7 @@ String grammar =  "D <- &(A !'b') 'a'* B !." +
                         "A <- 'a' A 'b' / :\n" +
                         "B <- 'b' B 'c' / :\n";
 try (
-  Peg pw = new Peg(grammar);
+  Peg gramExp = new Peg(grammar);
 ) {
 
   for(String input : new String[]{"abc", "aabbcc", "abbc"}) {
