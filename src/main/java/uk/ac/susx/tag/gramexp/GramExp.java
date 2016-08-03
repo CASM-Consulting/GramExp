@@ -98,7 +98,7 @@ public class GramExp implements AutoCloseable {
 
         String java = astToJava.toJava(parser.parse(grammar));
 
-        System.out.println(java);
+//        System.out.println(java);
 
         try (
             BufferedWriter writer = Files.newBufferedWriter(classPath)
