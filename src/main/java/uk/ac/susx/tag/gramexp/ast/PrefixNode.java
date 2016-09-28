@@ -8,7 +8,7 @@ public class PrefixNode extends SuperNode {
     private final Literal optional;
     private final CaptureNode capture;
 
-    public PrefixNode(CaptureNode capture, Literal optional, SuffixNode suffixNode)
+    public PrefixNode(CaptureNode capture, Literal optional, SuperNode suffixNode)
     {
         super(suffixNode);
         this.optional = optional;

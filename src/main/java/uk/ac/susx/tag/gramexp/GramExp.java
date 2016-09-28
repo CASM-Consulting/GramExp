@@ -267,14 +267,19 @@ public class GramExp implements AutoCloseable {
 //                "text <- <(!'<'.)+ 'content'>";
         final String grammar2 =
                 "/nlp/\n" +
-                "S <- '123 ' ([0-9-/] / 'to') ' 456'";
+                "X <- Item+ $" +
+                "Item <- Text<Start>? Start Text<Start>" +
+                "Start <- !^ [0-9] ";
+
         try (
                 GramExp gramExp = new GramExp(grammar2);
         ) {
 
                 System.out.println(gramExp.groups());
 //                for(String input : new String[]{"<html><body>content<br>new line<br/>another line<br>badgers</body></html>"}) {
-                for(String input : new String[]{"123 - 456"}) {
+                for(String input : new String[]{"" +
+                        "1. one2two\n" +
+                        "3. two"}) {
                     System.out.println(gramExp.parse(input));
 
                     System.out.println(gramExp.find(input));

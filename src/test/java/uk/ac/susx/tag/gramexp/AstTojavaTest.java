@@ -61,7 +61,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Definition( ) {\n" +
-            "  return toRule(Sequence(Identifier(),LEFTARROW(),Expression()));\n" +
+            "  return toRule(Sequence(StartOfLine(),Identifier(),LEFTARROW(),Expression()));\n" +
             " }\n" +
             " \n" +
             " public Rule Expression( ) {\n" +
@@ -73,7 +73,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Prefix( ) {\n" +
-            "  return toRule(FirstOf(Sequence(Optional(FirstOf(AND(),NOT())),Suffix()),Sequence(AOPEN(),Suffix(),Literal(),ACLOSE())));\n" +
+            "  return toRule(Sequence(Optional(FirstOf(AND(),NOT())),FirstOf(StartOfLine(),Suffix(),Sequence(AOPEN(),Suffix(),Literal(),ACLOSE()))));\n" +
             " }\n" +
             " \n" +
             " public Rule Suffix( ) {\n" +
@@ -89,7 +89,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule IdentStart( ) {\n" +
-            "  return toRule(FirstOf('_'CharRange('a','z'),CharRange('A','Z')));\n" +
+            "  return toRule(FirstOf('_',CharRange('a','z'),CharRange('A','Z')));\n" +
             " }\n" +
             " \n" +
             " public Rule IdentCont( ) {\n" +
@@ -113,7 +113,7 @@ public class AstTojavaTest {
             " }\n" +
             " \n" +
             " public Rule Char( ) {\n" +
-            "  return toRule(FirstOf(Sequence(\"\\\\\",AnyOf(\"nrt'\\\"[]\\\\\"),),Sequence(\"\\\\\",CharRange('0','2'),CharRange('0','7'),CharRange('0','7')),Sequence(\"\\\\\",CharRange('0','7'),Optional(CharRange('0','7'))),Sequence(TestNot(\"\\\\\"),ANY)));\n" +
+            "  return toRule(FirstOf(Sequence(\"\\\\\",AnyOf(\"nrt'\\\"[]\\\\\")),Sequence(\"\\\\\",CharRange('0','2'),CharRange('0','7'),CharRange('0','7')),Sequence(\"\\\\\",CharRange('0','7'),Optional(CharRange('0','7'))),Sequence(TestNot(\"\\\\\"),ANY)));\n" +
             " }\n" +
             " \n" +
             " public Rule LEFTARROW( ) {\n" +
@@ -206,6 +206,10 @@ public class AstTojavaTest {
             " \n" +
             " public Rule EndOfFile( ) {\n" +
             "  return toRule(TestNot(ANY));\n" +
+            " }\n" +
+            " \n" +
+            " public Rule StartOfLine( ) {\n" +
+            "  return toRule(Sequence('^',Spacing()));\n" +
             " }\n" +
             " \n" +
             " \n" +

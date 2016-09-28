@@ -1,6 +1,9 @@
 package uk.ac.susx.tag.gramexp;
 
 import org.parboiled.BaseParser;
+import org.parboiled.Rule;
+import org.parboiled.annotations.SuppressSubnodes;
+import uk.ac.susx.tag.gramexp.matchers.StartOfLineMatcher;
 
 import java.util.*;
 
@@ -45,5 +48,11 @@ abstract public class CapturingParser extends BaseParser<Object> {
         }
 
         return result;
+    }
+
+    @SuppressSubnodes
+    public Rule StartOfLine() {
+
+        return new StartOfLineMatcher();
     }
 }

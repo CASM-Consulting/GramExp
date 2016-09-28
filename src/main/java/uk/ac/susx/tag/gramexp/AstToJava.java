@@ -344,6 +344,11 @@ public class AstToJava implements Visitor {
         printer.print("EOI");
     }
 
+    @Override
+    public void visit(StartOfLineNode node) {
+        printer.print("StartOfLine()");
+    }
+
     public String toJava(GrammarNode grammar) {
         grammar.accept(this);
         String java = printer.getString();

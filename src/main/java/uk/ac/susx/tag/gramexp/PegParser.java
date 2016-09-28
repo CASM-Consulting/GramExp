@@ -74,10 +74,13 @@ public class PegParser extends BaseParser<Object> {
         Var<Literal> optionalLiteral = new Var<>();
         Var<CaptureNode> optionalCapture = new Var<>();
         return Sequence(
+                Optional(FirstOf(AND(), NOT()), optionalLiteral.set((Literal) pop())),
                 FirstOf(
-                        Sequence(Optional(FirstOf(AND(), NOT()), optionalLiteral.set((Literal) pop())), Suffix()),
-                        Sequence(AOPEN(), Suffix(), Literal(), ACLOSE(), optionalCapture.set(new CaptureNode((LiteralNode) pop())))),
-                push(new PrefixNode(optionalCapture.get(), optionalLiteral.get(), (SuffixNode) pop()))
+                        StartOfLine(),
+                        Suffix(),
+                        Sequence(AOPEN(), Suffix(), Literal(), ACLOSE(), optionalCapture.set(new CaptureNode((LiteralNode) pop())))
+                ),
+                push(new PrefixNode(optionalCapture.get(), optionalLiteral.get(), (SuperNode) pop()))
         );
     }
 
@@ -285,6 +288,11 @@ public class PegParser extends BaseParser<Object> {
     @SuppressSubnodes
     public Rule EndOfFile() {
         return Sequence("$", push(new EndOfFileNode<>()), Spacing());
+    }
+
+    @SuppressSubnodes
+    public Rule StartOfLine() {
+        return Sequence("^", push(new StartOfLineNode<>()), Spacing());
     }
 
 

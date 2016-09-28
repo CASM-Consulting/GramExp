@@ -1,10 +1,10 @@
 # Hierarchical syntax
 Grammar <- Spacing Mode? Definition+ EndOfFile
 Mode <- '/' (!'/' Char)+ '/' Spacing
-Definition <- Identifier LEFTARROW Expression
+Definition <- ^ Identifier LEFTARROW Expression
 Expression <- Sequence (SLASH Sequence)*
 Sequence <- Prefix*
-Prefix <- (AND / NOT)? Suffix / AOPEN Suffix Literal ACLOSE
+Prefix <- (AND / NOT)? (StartOfLine / Suffix / AOPEN Suffix Literal ACLOSE)
 Suffix <- Primary (QUESTION / STAR / PLUS)? (PUSH / POP)?
 Primary <- Identifier !LEFTARROW
 / OPEN Expression CLOSE
@@ -45,3 +45,4 @@ Comment <- '#' (!EndOfLine .)* EndOfLine
 Space <- ' ' / '\t' / EndOfLine
 EndOfLine <- '\r\n' / '\n' / '\r'
 EndOfFile <- !.
+StartOfLine <- '^' Spacing

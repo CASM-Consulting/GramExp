@@ -3,6 +3,7 @@ package uk.ac.susx.tag.gramexp;
 import org.parboiled.Rule;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
+import uk.ac.susx.tag.gramexp.matchers.StartOfLineMatcher;
 
 import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 
@@ -14,7 +15,7 @@ abstract public class AbstractNlpParser extends CapturingParser {
 
 
     public Rule S() {
-        return AnyOf(" \t");
+        return AnyOf(new char[]{' ', '\t'});
     }
     protected Rule NUM() {
         return CharRange('0', '9');
