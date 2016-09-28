@@ -255,23 +255,26 @@ public class GramExp implements AutoCloseable {
 //                }
 //        }
 
+//        final String grammar2 =
+//                "/nlp/\n" +
+//                "document <- (tag / text)* $\n" +
+//                "tag <- open_tag (text / tag)* close_tag / self_close \n" +
+//                "open_tag <- '<' tag_type push (S attr)? '>'\n" +
+//                "close_tag <- '</' tag_type pop '>'\n" +
+//                "self_close <- '<' tag_type '/'? '>'\n" +
+//                "attr <- <[0-9a-zA-Z =\"'#\\[-]+ 'attr'>\n" +
+//                "tag_type <- <[0-9a-zA-Z]+ 'tag'>\n" +
+//                "text <- <(!'<'.)+ 'content'>";
         final String grammar2 =
                 "/nlp/\n" +
-                "document <- (tag / text)* $\n" +
-                "tag <- open_tag (text / tag)* close_tag / self_close \n" +
-                "open_tag <- '<' tag_type push (S attr)? '>'\n" +
-                "close_tag <- '</' tag_type pop '>'\n" +
-                "self_close <- '<' tag_type '/'? '>'\n" +
-                "attr <- <[0-9a-zA-Z =\"'#\\[-]+ 'attr'>\n" +
-                "tag_type <- <[0-9a-zA-Z]+ 'tag'>\n" +
-                "text <- <(!'<'.)+ 'content'>";
-
+                "S <- '123 ' ([0-9-/] / 'to') ' 456'";
         try (
                 GramExp gramExp = new GramExp(grammar2);
         ) {
 
                 System.out.println(gramExp.groups());
-                for(String input : new String[]{"<html><body>content<br>new line<br/>another line<br>badgers</body></html>"}) {
+//                for(String input : new String[]{"<html><body>content<br>new line<br/>another line<br>badgers</body></html>"}) {
+                for(String input : new String[]{"123 - 456"}) {
                     System.out.println(gramExp.parse(input));
 
                     System.out.println(gramExp.find(input));

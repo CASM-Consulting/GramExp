@@ -285,7 +285,7 @@ public class AstToJava implements Visitor {
 
         }
 
-        if(chrs.size() > 1) {
+        if(n > 1) {
             printer.print(",");
         }
 
