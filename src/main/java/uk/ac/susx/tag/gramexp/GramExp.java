@@ -267,9 +267,7 @@ public class GramExp implements AutoCloseable {
 //                "text <- <(!'<'.)+ 'content'>";
         final String grammar2 =
                 "/nlp/\n" +
-                "X <- Item+ $" +
-                "Item <- Text<Start>? Start Text<Start>" +
-                "Start <- ^ Re<'\\\\d{1,3}'> ";
+                "X <- W $";
 
         try (
                 GramExp gramExp = new GramExp(grammar2);
@@ -277,13 +275,16 @@ public class GramExp implements AutoCloseable {
 
                 System.out.println(gramExp.groups());
 //                for(String input : new String[]{"<html><body>content<br>new line<br/>another line<br>badgers</body></html>"}) {
-                for(String input : new String[]{"" +
-                        "100. one2two\n" +
-                        "30. two\n" +
-                        "4. four"}) {
-                    System.out.println(gramExp.parse(input));
+                for(String input : new String[]{"a", ".", "\u0082"}) {
+                    try {
 
-                    System.out.println(gramExp.find(input));
+                        System.out.println(gramExp.parse(input));
+
+                        System.out.println(gramExp.find(input));
+                    } catch (GrammarException e) {
+
+                        System.err.println(e.getMessage());
+                    }
                 }
         }
 

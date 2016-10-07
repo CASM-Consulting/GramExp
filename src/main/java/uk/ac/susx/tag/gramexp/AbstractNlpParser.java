@@ -46,7 +46,7 @@ abstract public class AbstractNlpParser extends CapturingParser {
         );
     }
     protected Rule W() {
-        return FirstOf(CI(), NUM());
+        return Sequence(TestNot(FirstOf(PUNCT(), S(), Nl())), ANY);
     }
     @SuppressSubnodes
     public Rule Text() {
