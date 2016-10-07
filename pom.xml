@@ -18,7 +18,7 @@
 
     <groupId>uk.ac.susx.tag</groupId>
     <artifactId>gramexp</artifactId>
-    <version>0.5.1</version>
+    <version>0.5.2</version>
 
     <dependencies>
         <dependency>

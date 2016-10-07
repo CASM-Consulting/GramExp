@@ -14,11 +14,11 @@ import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 abstract public class AbstractNlpParser extends CapturingParser {
 
 
-    public Rule S() {
-        return AnyOf(new char[]{' ', '\t'});
-    }
     protected Rule NUM() {
         return CharRange('0', '9');
+    }
+    protected Rule CI() {
+        return FirstOf(UPPER(), LOWER());
     }
     protected Rule UPPER() {
         return FirstOf(
@@ -32,9 +32,6 @@ abstract public class AbstractNlpParser extends CapturingParser {
                 CharRange('\u00DF', '\u00FF')
         );
     }
-    protected Rule CI() {
-        return FirstOf(UPPER(), LOWER());
-    }
     protected Rule PUNCT() {
         return FirstOf(
                 CharRange('\u0021', '\u002F'),
@@ -45,9 +42,30 @@ abstract public class AbstractNlpParser extends CapturingParser {
                 CharRange('\u2000', '\u206F')
         );
     }
-    protected Rule W() {
-        return Sequence(TestNot(FirstOf(PUNCT(), S(), Nl())), ANY);
+
+    public Rule S() {
+        return AnyOf(new char[]{' ', '\t'});
     }
+
+    @SuppressSubnodes
+    public Rule Nl() {
+        return Sequence(Optional('\r'), Ch('\n'));
+    }
+
+    protected Rule W() {
+        return FirstOf(
+                CharRange('\u0000', '\u001F'),
+//                CharRange('\u0030', '\u0039'),
+                CharRange('\u0041', '\u005A'),
+                CharRange('\u0061', '\u007A'),
+                CharRange('\u007F', '\u009F'),
+                CharRange('\u00C0', '\u1FFF'),
+                CharRange('\u2070', '\u2DFF'),
+                CharRange('\u2E80', '\uFFFF')
+        );
+//        return Sequence(TestNot(FirstOf(PUNCT(), S(), Nl())), ANY);
+    }
+
     @SuppressSubnodes
     public Rule Text() {
         return OneOrMore(FirstOf(W(), PUNCT(), S(), Nl()));
@@ -56,11 +74,6 @@ abstract public class AbstractNlpParser extends CapturingParser {
     @SuppressSubnodes
     public Rule Text(Object until) {
         return OneOrMore(FirstOf(TestNot(until), NOTHING), FirstOf(W(), PUNCT(), S(), Nl()));
-    }
-
-    @SuppressSubnodes
-    public Rule Nl() {
-        return Sequence(Optional('\r'), Ch('\n'));
     }
 
     @SuppressSubnodes
