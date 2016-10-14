@@ -267,7 +267,7 @@ public class GramExp implements AutoCloseable {
 //                "text <- <(!'<'.)+ 'content'>";
         final String grammar2 =
                 "/nlp/\n" +
-                "X <- W $";
+                "X <- W+";
 
         try (
                 GramExp gramExp = new GramExp(grammar2);

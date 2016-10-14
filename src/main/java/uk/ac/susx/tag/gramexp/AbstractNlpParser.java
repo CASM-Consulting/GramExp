@@ -61,7 +61,7 @@ abstract public class AbstractNlpParser extends CapturingParser {
                 CharRange('\u007F', '\u009F'),
                 CharRange('\u00C0', '\u1FFF'),
                 CharRange('\u2070', '\u2DFF'),
-                CharRange('\u2E80', '\uFFFF')
+                CharRange('\u2E80', '\uFFCF')
         );
 //        return Sequence(TestNot(FirstOf(PUNCT(), S(), Nl())), ANY);
     }
