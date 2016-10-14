@@ -77,6 +77,11 @@ abstract public class AbstractNlpParser extends CapturingParser {
     }
 
     @SuppressSubnodes
+    public Rule Until(Object until) {
+        return OneOrMore(FirstOf(TestNot(until), NOTHING), ANY);
+    }
+
+    @SuppressSubnodes
     public Rule Ic(String str) {
         return IgnoreCase(str);
     }
