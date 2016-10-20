@@ -49,7 +49,7 @@ abstract public class AbstractNlpParser extends CapturingParser {
 
     @SuppressSubnodes
     public Rule Nl() {
-        return Sequence(Optional('\r'), Ch('\n'));
+        return FirstOf(Sequence(Optional('\r'), Ch('\n')), Ch('\r'));
     }
 
     protected Rule W() {
