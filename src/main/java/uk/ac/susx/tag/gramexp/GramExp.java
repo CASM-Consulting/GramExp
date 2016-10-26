@@ -86,8 +86,16 @@ public class GramExp implements AutoCloseable {
             //pass
         }
 
-
-
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                try {
+                    close();
+                } catch (Exception e) {
+                    //pass
+                }
+            }
+        });
     }
 
     void generateCode() {

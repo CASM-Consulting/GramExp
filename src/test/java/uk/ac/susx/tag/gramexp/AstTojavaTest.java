@@ -50,7 +50,7 @@ public class AstTojavaTest {
             "import uk.ac.susx.tag.gramexp.CapturingParser;\n" +
             "import uk.ac.susx.tag.gramexp.Capture;\n" +
             "@BuildParseTree\n" +
-            "public class GramExp extends CapturingParser<Object> {\n" +
+            "public class GramExp extends CapturingParser {\n" +
             "\n" +
             " public Rule Grammar( ) {\n" +
             "  return toRule(Sequence(Spacing(),Optional(Mode()),OneOrMore(Definition()),EndOfFile()));\n" +

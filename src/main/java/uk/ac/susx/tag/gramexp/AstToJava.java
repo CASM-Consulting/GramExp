@@ -57,7 +57,7 @@ public class AstToJava implements Visitor {
                 cls = AbstractNlpParser.class.getCanonicalName();
                 break;
             default:
-                cls = "CapturingParser<Object>";
+                cls = "CapturingParser";
                 break;
         }
 

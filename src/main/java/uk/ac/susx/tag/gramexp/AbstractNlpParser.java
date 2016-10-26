@@ -68,12 +68,12 @@ abstract public class AbstractNlpParser extends CapturingParser {
 
     @SuppressSubnodes
     public Rule Text() {
-        return OneOrMore(FirstOf(W(), PUNCT(), S(), Nl()));
+        return OneOrMore(FirstOf(W(), PUNCT(), S(), NUM()));
     }
 
     @SuppressSubnodes
     public Rule Text(Object until) {
-        return OneOrMore(FirstOf(TestNot(until), NOTHING), FirstOf(W(), PUNCT(), S(), Nl()));
+        return OneOrMore(FirstOf(TestNot(until), NOTHING), FirstOf(W(), PUNCT(), S(), NUM()));
     }
 
     @SuppressSubnodes

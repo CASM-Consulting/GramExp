@@ -69,7 +69,7 @@ public class Util {
             }
 
             private FileVisitResult handleException(final IOException e) {
-                e.printStackTrace(); // replace with more robust error handling
+//                e.printStackTrace(); // replace with more robust error handling
                 return FileVisitResult.CONTINUE;
             }
 
