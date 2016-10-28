@@ -1,8 +1,10 @@
 package uk.ac.susx.tag.gramexp;
 
+import jdk.internal.util.xml.impl.Pair;
 import org.parboiled.*;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
+import org.parboiled.common.Tuple2;
 import org.parboiled.errors.ErrorUtils;
 import org.parboiled.parserunners.ReportingParseRunner;
 import org.parboiled.support.ParsingResult;
@@ -53,7 +55,7 @@ public class PegParser extends BaseParser<Object> {
 
     public Rule Definition() {
         return Sequence(
-                Identifier(),
+                push(new Tuple2(false, true)),Identifier(),
                 LEFTARROW(),
                 Expression(), push(new DefinitionNode((ExpressionNode) pop(), (IdentifierNode) pop()))
         );
@@ -107,7 +109,7 @@ public class PegParser extends BaseParser<Object> {
 
     public Rule Primary() {
         return Sequence(FirstOf(
-                Sequence(Identifier(), TestNot(LEFTARROW())),
+                Sequence(push(new Tuple2(false,false)), Identifier(), TestNot(LEFTARROW())),
                 Sequence(OPEN(), Expression(), CLOSE()),
                 Literal(),
                 Class(),
@@ -122,11 +124,12 @@ public class PegParser extends BaseParser<Object> {
     public Rule Identifier() {
         Var<StringBuilder> id = new Var<>(new StringBuilder());
         Var<ArgumentsNode> optional = new Var<>();
+
         return Sequence(
                 IdentStart(), (id.get().append(match())!=null),
                 ZeroOrMore(IdentCont(), (id.get().append(match())!=null)),
                 Optional(Arguments(), optional.set((ArgumentsNode)pop())),
-                push(new IdentifierNode(id.get().toString(), optional.get())),
+                push(new IdentifierNode(id.get().toString(), optional.get(), (Tuple2)pop())),
                 Spacing()
         );
     }
@@ -143,7 +146,7 @@ public class PegParser extends BaseParser<Object> {
         Var<List<SuperNode>> args = new Var<>(new ArrayList<>());
         return Sequence(
                 AOPEN(),
-                OneOrMore(FirstOf(Identifier(), Literal()), args.get().add((SuperNode)pop())),
+                OneOrMore(FirstOf(Sequence(push(new Tuple2(true, ((Tuple2)peek()).b)),Identifier()), Literal()), args.get().add((SuperNode)pop())),
                 ACLOSE(),
                 push(new ArgumentsNode<>(args.get()))
         );

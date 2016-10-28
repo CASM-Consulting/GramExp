@@ -5,15 +5,18 @@ package uk.ac.susx.tag.gramexp.ast;
  */
 public class DefinitionNode extends SuperNode {
 
-    private final String id;
+    private final IdentifierNode id;
 
     public DefinitionNode(ExpressionNode expressionNode, IdentifierNode id)
     {
         super(expressionNode);
-        this.id = id.getId();
+        this.id = id;
     }
 
     public String name() {
+        return id.getId();
+    }
+    public IdentifierNode getIdentifier() {
         return id;
     }
 

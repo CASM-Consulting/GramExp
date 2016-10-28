@@ -94,8 +94,9 @@ public class AstToJava implements Visitor {
     public void visit(DefinitionNode node) {
 
         printer.print("public Rule ");
-        printer.print(node.name());
-        printer.print("( ) {");
+//        printer.print(node.name());
+        visit(node.getIdentifier());
+        printer.print("{");
         printer.indent(1);
         printer.println();
         printer.print("return toRule(");
@@ -220,10 +221,19 @@ public class AstToJava implements Visitor {
 
     @Override
     public void visit(IdentifierNode node) {
-        printer.print(node.getId());
-        printer.print("(");
-        visitChildren(node);
-        printer.print(")");
+        String id = node.getId();
+
+        if(node.isArgument() && node.isDefinition()) {
+            printer.print("Object ");
+        }
+
+        printer.print(id);
+
+        if(!id.startsWith("_")) {
+            printer.print("(");
+            visitChildren(node);
+            printer.print(")");
+        }
     }
 
     @Override
