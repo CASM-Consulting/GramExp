@@ -78,7 +78,12 @@ abstract public class AbstractNlpParser extends CapturingParser {
 
     @SuppressSubnodes
     public Rule Until(Object until) {
-        return OneOrMore(FirstOf(TestNot(until), NOTHING), ANY);
+        return Sequence(ZeroOrMore(FirstOf(TestNot(until), NOTHING), ANY), Test(until));
+    }
+
+    @SuppressSubnodes
+    public Rule UntilInc(Object until) {
+        return Sequence(ZeroOrMore(FirstOf(TestNot(until), NOTHING), ANY), until);
     }
 
     @SuppressSubnodes
