@@ -13,25 +13,33 @@ import static org.parboiled.support.ParseTreeUtils.printNodeTree;
 @BuildParseTree
 abstract public class AbstractNlpParser extends CapturingParser {
 
-
+    @SuppressSubnodes
     protected Rule NUM() {
         return CharRange('0', '9');
     }
+
+    @SuppressSubnodes
     protected Rule CI() {
         return FirstOf(UPPER(), LOWER());
     }
+
+    @SuppressSubnodes
     protected Rule UPPER() {
         return FirstOf(
                 CharRange('A', 'Z'),
                 CharRange('\u00C0', '\u00DE')
         );
     }
+
+    @SuppressSubnodes
     protected Rule LOWER() {
         return FirstOf(
                 CharRange('a', 'z'),
                 CharRange('\u00DF', '\u00FF')
         );
     }
+
+    @SuppressSubnodes
     protected Rule PUNCT() {
         return FirstOf(
                 CharRange('\u0021', '\u002F'),
@@ -43,6 +51,7 @@ abstract public class AbstractNlpParser extends CapturingParser {
         );
     }
 
+    @SuppressSubnodes
     public Rule S() {
         return AnyOf(new char[]{' ', '\t'});
     }
@@ -52,6 +61,7 @@ abstract public class AbstractNlpParser extends CapturingParser {
         return FirstOf(Sequence(Optional('\r'), Ch('\n')), Ch('\r'));
     }
 
+    @SuppressSubnodes
     protected Rule W() {
         return FirstOf(
                 CharRange('\u0000', '\u001F'),
@@ -85,6 +95,7 @@ abstract public class AbstractNlpParser extends CapturingParser {
     public Rule Ic(String str) {
         return IgnoreCase(str);
     }
+
     @SuppressSubnodes
     public Rule Ic(char... str) {
         return IgnoreCase(str);

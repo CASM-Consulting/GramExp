@@ -275,8 +275,25 @@ public class GramExp implements AutoCloseable {
 //                "text <- <(!'<'.)+ 'content'>";
         final String grammar2 =
                 "/nlp/\n" +
-                "X <- Y<'1'> Y<'2'> $ \n" +
-                "Y<_X> <- _X+";
+                        "Pi <- (NumRange Line+) / ( Entry Entry+)\n" +
+                        " \n" +
+                        "YES <- IgnoreCase<\"YES\">\n" +
+                        "NO <- IgnoreCase<\"NO\">\n" +
+                        "NA <- IgnoreCase<\"N\"> \"/\"? IgnoreCase<\"A\">\n" +
+                        " \n" +
+                        "Entry <- Item (YesNo / Line)*\n" +
+                        " \n" +
+                        "YesNo <- (YES / NO / NA) Nl?\n" +
+                        " \n" +
+                        "Line <- !Start Text Nl? (!Start / :)\n" +
+                        " \n" +
+                        "Item <- Start Text? Nl?\n" +
+                        " \n" +
+                        "Start <- NumRange / Num\n" +
+                        " \n" +
+                        "Num <- NUM PUNCT* S*\n" +
+                        " \n" +
+                        "NumRange <- NUM S* ([-/] / 'to') S* NUM PUNCT* S*";
 
         try (
                 GramExp gramExp = new GramExp(grammar2);
@@ -284,7 +301,13 @@ public class GramExp implements AutoCloseable {
 
                 System.out.println(gramExp.groups());
 //                for(String input : new String[]{"<html><body>content<br>new line<br/>another line<br>badgers</body></html>"}) {
-                for(String input : new String[]{"11112222", ".", "\u0082"}) {
+                for(String input : new String[]{"1. n/a\n" +
+                        "2. n/a.\n" +
+                        "3. n/a.\n" +
+                        "4. n/a.\n" +
+                        "5. n/a.\n" +
+                        "6. n/a.\n" +
+                        "7. n/a."}) {
                     try {
 
                         System.out.println(gramExp.parse(input));

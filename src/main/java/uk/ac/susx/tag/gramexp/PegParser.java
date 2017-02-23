@@ -1,6 +1,5 @@
 package uk.ac.susx.tag.gramexp;
 
-import jdk.internal.util.xml.impl.Pair;
 import org.parboiled.*;
 import org.parboiled.annotations.BuildParseTree;
 import org.parboiled.annotations.SuppressSubnodes;
