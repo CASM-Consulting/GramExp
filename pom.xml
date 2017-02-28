@@ -7,12 +7,12 @@
     <parent>
         <groupId>uk.ac.susx.tag</groupId>
         <artifactId>tag-dist</artifactId>
-        <version>1.0.3</version>
+        <version>1.0.5</version>
         <relativePath>../tag-dist/pom.xml</relativePath>
     </parent>
 
     <properties>
-        <parboiled.version>1.1.7</parboiled.version>
+        <parboiled.version>1.1.8</parboiled.version>
         <junit.version>4.11</junit.version>
     </properties>
 
