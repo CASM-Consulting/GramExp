@@ -5,6 +5,8 @@ import org.parboiled.buffers.InputBuffer;
 import org.parboiled.buffers.InputBufferUtils;
 import org.parboiled.matchers.CustomMatcher;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

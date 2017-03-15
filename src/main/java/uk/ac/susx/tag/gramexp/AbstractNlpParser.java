@@ -89,13 +89,23 @@ abstract public class AbstractNlpParser extends CapturingParser {
     @SuppressSubnodes
     public Rule Until(Object until) {
         return OneOrMore(FirstOf(TestNot(until), NOTHING), ANY);
-//        return Sequence(ZeroOrMore(FirstOf(TestNot(until), NOTHING), ANY), Test(until));
+    }
+
+    @SuppressSubnodes
+    public Rule Until(Object until, Object except) {
+        return OneOrMore(FirstOf(TestNot(until), NOTHING), Sequence(TestNot(except), ANY));
     }
 
     @SuppressSubnodes
     public Rule UntilInc(Object until) {
         return Sequence(ZeroOrMore(FirstOf(TestNot(until), NOTHING), ANY), until);
     }
+
+    @SuppressSubnodes
+    public Rule UntilInc(Object until, Object except) {
+        return Sequence(ZeroOrMore(FirstOf(TestNot(until), NOTHING), Sequence(TestNot(except), ANY)), until);
+    }
+
 
     @SuppressSubnodes
     public Rule Ic(String str) {
@@ -106,5 +116,4 @@ abstract public class AbstractNlpParser extends CapturingParser {
     public Rule Ic(char... str) {
         return IgnoreCase(str);
     }
-
 }
