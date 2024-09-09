@@ -4,12 +4,13 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>uk.ac.susx.tag</groupId>
-        <artifactId>tag-dist</artifactId>
-        <version>1.0.5</version>
-        <relativePath>../tag-dist/pom.xml</relativePath>
-    </parent>
+    <distributionManagement>
+        <repository>
+            <id>github</id>
+            <name>GitHub CASM-Consulting Apache Maven Packages</name>
+            <url>https://maven.pkg.github.com/CASM-Consulting/method52</url>
+        </repository>
+    </distributionManagement>
 
     <properties>
         <parboiled.version>1.1.7</parboiled.version>
